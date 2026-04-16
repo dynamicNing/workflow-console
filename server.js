@@ -24,6 +24,15 @@ const JOB_NAMES = {
 };
 
 // 任务详情：云文档、存档路径
+// 
+// 【存档规则】
+// 1. 主目录 content-archive/ 不存放任何 md 文件，统一在子目录分类
+// 2. 仅以下 3 个 cron 任务允许生成 md 存档到 content-archive：
+//    - 14e827f4 (AI Builders Digest)        → ai-digest/
+//    - 52542803 (每日经济政策资讯)          → economic-policy/
+//    - d92e41f3 (互联网出海开发专题集)      → overseas-dev/
+// 3. 其他任务（skill-updates / stock-market / memory）不生成 md 存档
+//
 const JOB_DETAILS = {
   '14e827f4-eb06-4c98-91b8-00928e638de3': {
     cloudDoc: true,
@@ -42,9 +51,9 @@ const JOB_DETAILS = {
   '865787cb-f15a-484b-a6ba-f1b88fd00fb0': {
     cloudDoc: true,
     cloudDocUrl: 'openclaw 内置发送',
-    mdArchive: true,
-    mdArchivePath: 'content-archive/skill-updates/YYYY-MM-DD.md',
-    description: '每日热门 Skill 更新汇总'
+    mdArchive: false,
+    mdArchivePath: null,
+    description: '每日热门 Skill 更新汇总（结果仅发送飞书，不存档）'
   },
   'a0240533-ab2d-4da4-9079-0b1433014eae': {
     cloudDoc: true,
@@ -65,7 +74,7 @@ const JOB_DETAILS = {
     cloudDocUrl: 'openclaw 内置发送',
     mdArchive: false,
     mdArchivePath: null,
-    description: 'Memory Dreaming 增强任务'
+    description: 'Memory Dreaming 增强任务（结果仅发送飞书，不存档）'
   }
 };
 
