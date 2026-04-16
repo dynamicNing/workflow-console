@@ -134,8 +134,8 @@ app.get('/api/content', (req, res) => {
   }
 });
 
-// 兜底
-app.get('/{*path}', (req, res) => {
+// 兜底 - 匹配所有未匹配路由
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
