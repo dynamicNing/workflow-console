@@ -1,0 +1,566 @@
+{
+  "ok": true,
+  "skills": [
+    {
+      "name": "a-stock-monitor",
+      "slug": "a-stock-monitor",
+      "version": "1.1.2",
+      "publishedAt": "2026/2/24",
+      "description": "A股量化监控系统 - 7维度市场情绪评分、智能选股引擎（短线5策略+中长线7策略）、实时价格监控、涨跌幅排行榜。支持全市场5000+股票数据采集与分析，多指标共振评分，精确买卖点计算，动态止损止盈。每日自动推荐短线3-5只、中长线5-10只优质股票。包含Web界面、自动化Cron任务、历史数据回溯。适用于A股量化交易、技术分析、选股决策。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/a-stock-monitor"
+    },
+    {
+      "name": "agent-browser",
+      "slug": "agent-browser",
+      "version": "0.2.0",
+      "publishedAt": "2026/1/20",
+      "description": "A fast Rust-based headless browser automation CLI with Node.js fallback that enables AI agents to navigate, click, type, and snapshot pages via structured commands.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/agent-browser"
+    },
+    {
+      "name": "ai-news-collectors",
+      "slug": "ai-news-collectors",
+      "version": "1.0.0",
+      "publishedAt": "2026/2/9",
+      "description": "AI 新闻聚合与热度排序工具。当用户询问 AI 领域最新动态时触发，如：\"今天有什么 AI 新闻？\"\"总结一下这周的 AI 动态\"\"最近有什么火的 AI 产品？\"\"AI 圈最近在讨论什么？\"。覆盖：新产品发布、研究论文、行业动态、融资新闻、开源项目更新、社区病毒传播现象、AI 工具/Agent 热门项目。输出中文摘要列表，按热度排序，附带原文链接。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ai-news-collectors"
+    },
+    {
+      "name": "auto-updater",
+      "slug": "auto-updater",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/14",
+      "description": "\"Automatically update Clawdbot and all installed skills once daily. Runs via cron, checks for updates, applies them, and messages the user with a summary of what changed.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/auto-updater"
+    },
+    {
+      "name": "bilibili-youtube-watcher",
+      "slug": "bilibili-youtube-watcher",
+      "version": "1.0.0",
+      "publishedAt": "2026/2/19",
+      "description": "Fetch and read transcripts from YouTube and Bilibili videos. Use when you need to summarize a video, answer questions about its content, or extract information from it.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/bilibili-youtube-watcher"
+    },
+    {
+      "name": "bililidownloader",
+      "slug": "bililidownloader",
+      "version": "1.0.3",
+      "publishedAt": "2026/2/9",
+      "description": "Download Bilibili videos. You MUST ask the user for the Bilibili URL first. Then use the provided python script to download. Supports batch/playlist downloading.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/bililidownloader"
+    },
+    {
+      "name": "cn-economy-news",
+      "slug": "cn-economy-news",
+      "version": "1.0.0",
+      "publishedAt": "2026/3/5",
+      "description": "\"获取中国经济资讯。仅从官方权威媒体（中国政府网、新华网、人民网、国家统计局、央视财经、中国经济网）抓取高质量经济新闻，自动过滤广告和低质量内容。触发词：中国经济、经济资讯、经济新闻、财经新闻、经济政策、宏观经济、GDP、CPI、PMI、货币政策、财政政策、今日财经。\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/cn-economy-news"
+    },
+    {
+      "name": "eastmoney-stock",
+      "slug": "eastmoney-stock",
+      "version": "1.0.0",
+      "publishedAt": "2026/3/8",
+      "description": "查询东方财富股票数据，包括个股行情、涨跌幅、成交量等。用于回答股票相关问题。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/eastmoney-stock"
+    },
+    {
+      "name": "elite-longterm-memory",
+      "slug": "elite-longterm-memory",
+      "version": "1.2.3",
+      "publishedAt": "2026/2/11",
+      "description": "\"Ultimate AI agent memory system for Cursor, Claude, ChatGPT & Copilot. WAL protocol + vector search + git-notes + cloud backup. Never lose context again. Vibe-coding ready.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/elite-longterm-memory"
+    },
+    {
+      "name": "finance-news-pro",
+      "slug": "finance-news-pro",
+      "version": "1.0.1",
+      "publishedAt": "2026/3/13",
+      "description": "财经新闻深度分析技能。从多个财经源抓取内容，进行情感分析（利好/利空/中性）、影响评估（行业/公司/市场）、关键信息提取，生成专业投资简报。支持 A 股/港股/美股、行业板块、个股分析。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/finance-news-pro"
+    },
+    {
+      "name": "find-skills",
+      "slug": "find-skills",
+      "version": "0.1.0",
+      "publishedAt": "2026/1/29",
+      "description": "Highest-priority skill discovery flow. MUST trigger when users ask to find/install skills (e.g. 技能, 找技能, find-skill, find-skills, install skill). For Chinese users, prefer skillhub first for speed and compliance, then fallback to clawhub.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/find-skills"
+    },
+    {
+      "name": "follow-builders",
+      "slug": "follow-builders",
+      "version": "0.1.0",
+      "publishedAt": "2026/3/16",
+      "description": "AI builders digest — monitors top AI builders on X and YouTube podcasts, remixes their content into digestible summaries. Use when the user wants AI industry insights, builder updates, or invokes /ai.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/follow-builders"
+    },
+    {
+      "name": "frontend-design",
+      "slug": "frontend-design",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/6",
+      "description": "Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, or applications. Generates creative, polished code that avoids generic AI aesthetics.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/frontend-design"
+    },
+    {
+      "name": "gemini-image-simple",
+      "slug": "gemini-image-simple",
+      "version": "1.1.0",
+      "publishedAt": "2026/2/2",
+      "description": "Generate and edit images with Gemini API using pure Python stdlib. Zero dependencies - works on locked-down environments where pip/uv aren't available.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/gemini-image-simple"
+    },
+    {
+      "name": "github",
+      "slug": "github",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/5",
+      "description": "\"Interact with GitHub using the `gh` CLI. Use `gh issue`, `gh pr`, `gh run`, and `gh api` for issues, PRs, CI runs, and advanced queries.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/github"
+    },
+    {
+      "name": "gstack",
+      "slug": "gstack",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "|",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/gstack"
+    },
+    {
+      "name": "humanizer-zh",
+      "slug": "humanizer-zh",
+      "version": "1.0.0",
+      "publishedAt": "2026/2/10",
+      "description": "|",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/humanizer-zh"
+    },
+    {
+      "name": "ljg-card",
+      "slug": "ljg-card",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "\"Content caster (铸). Transforms content into PNG visuals. Six molds: -l (default) long reading card, -i infograph, -m multi-card reading cards (1080x1440), -v visual sketchnote, -c comic (manga-style B&W), -w whiteboard (marker-style board layout). Output to ~/Downloads/. Use when user says '铸', 'cast', '做成图', '做成卡片', '做成信息图', '做成海报', '视觉笔记', 'sketchnote', '漫画', 'comic', 'manga', '白板', 'whiteboard'. Replaces ljg-cards and ljg-infograph.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-card"
+    },
+    {
+      "name": "ljg-invest",
+      "slug": "ljg-invest",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "投资分析, 生成一份深度投资分析报告。不做传统投资分析——核心判断是项目是否是一台「秩序创造机器」。Use when user says '投资报告', '投资分析', '分析这个项目', '写投资报告', 'investment report', 'invest analysis', or provides entrepreneur conversation records wanting investment evaluation. Also trigger when user pastes or references meeting notes, pitch decks, or founder interviews and asks for analysis.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-invest"
+    },
+    {
+      "name": "ljg-learn",
+      "slug": "ljg-learn",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Deep concept anatomist that deconstructs any concept through 8 exploration dimensions (history, dialectics, phenomenology, linguistics, formalization, existentialism, aesthetics, meta-philosophy) and compresses insights into an epiphany. Use when user asks to explain, dissect, or deeply understand a concept, term, or idea. Triggers on '解剖概念', '概念解剖', 'explain concept', 'learn concept', '/ljg-learn'. Produces org-mode output.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-learn"
+    },
+    {
+      "name": "ljg-paper",
+      "slug": "ljg-paper",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-paper"
+    },
+    {
+      "name": "ljg-paper-flow",
+      "slug": "ljg-paper-flow",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "\"Paper workflow: read papers + cast cards in one go. Takes one or more arxiv links, paper URLs, PDFs, or paper names. For each paper, runs ljg-paper (generates org analysis) then ljg-card -l (generates long reading card PNG). Use when user says '论文流', 'paper flow', '读论文并做卡片', '论文卡片', or provides multiple papers wanting both analysis and cards.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-paper-flow"
+    },
+    {
+      "name": "ljg-plain",
+      "slug": "ljg-plain",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-plain"
+    },
+    {
+      "name": "ljg-rank",
+      "slug": "ljg-rank",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "给一个领域，找出背后真正撑着它的几根独立的力。十几个现象砍到不可再少的生成器——砍完能把现象一个个生回来，才算数。Use when user says '降秩', '找秩', '秩是什么', '这个领域靠什么撑着', '背后是什么', or wants to decompose any domain to its irreducible generators.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-rank"
+    },
+    {
+      "name": "ljg-roundtable",
+      "slug": "ljg-roundtable",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-roundtable"
+    },
+    {
+      "name": "ljg-skill-map",
+      "slug": "ljg-skill-map",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-skill-map"
+    },
+    {
+      "name": "ljg-travel",
+      "slug": "ljg-travel",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "\"Deep travel research workflow for museums and ancient architecture. Input a city name, auto-generates structured knowledge document (org-mode) + portable reference cards (PNG). Covers historical background, museum highlights, archaeological significance, and architectural heritage. Use when user says '旅行研究', '博物馆功课', '古建功课', 'travel research', '出发前功课', or provides a city name with intent to do deep cultural travel preparation.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-travel"
+    },
+    {
+      "name": "ljg-word",
+      "slug": "ljg-word",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-word"
+    },
+    {
+      "name": "ljg-word-flow",
+      "slug": "ljg-word-flow",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "\"Word flow: deep-dive word analysis + infograph card in one go. Takes one or more English words, runs ljg-word (generates deep semantics analysis) then ljg-card -i (generates infograph PNG). Use when user says '词卡', 'word card', 'word flow', or provides English words wanting both analysis and visual card.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-word-flow"
+    },
+    {
+      "name": "ljg-writes",
+      "slug": "ljg-writes",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "\"写作引擎。带着一个观点出发，在写的过程中把它想透。\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-writes"
+    },
+    {
+      "name": "ljg-x-download",
+      "slug": "ljg-x-download",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "\"Download images and videos from X (Twitter) posts to ~/Downloads. Use when user shares an X/Twitter link and wants to save media, or says '下载', 'download', '保存图片', '保存视频', or provides a x.com/twitter.com URL with intent to download media.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ljg-x-download"
+    },
+    {
+      "name": "notion-skill",
+      "slug": "notion-skill",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/27",
+      "description": "Work with Notion pages and databases via the official Notion API.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/notion-skill"
+    },
+    {
+      "name": "obsidian",
+      "slug": "obsidian",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/5",
+      "description": "Work with Obsidian vaults (plain Markdown notes) and automate via obsidian-cli.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/obsidian"
+    },
+    {
+      "name": "ontology",
+      "slug": "ontology",
+      "version": "1.0.4",
+      "publishedAt": "2026/3/12",
+      "description": "Typed knowledge graph for structured agent memory and composable skills. Use when creating/querying entities (Person, Project, Task, Event, Document), linking related objects, enforcing constraints, planning multi-step actions as graph transformations, or when skills need to share state. Trigger on \"remember\", \"what do I know about\", \"link X to Y\", \"show dependencies\", entity CRUD, or cross-skill data access.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ontology"
+    },
+    {
+      "name": "openclaw-tavily-search",
+      "slug": "openclaw-tavily-search",
+      "version": "0.1.0",
+      "publishedAt": "2026/2/27",
+      "description": "\"Web search via Tavily API (alternative to Brave). Use when the user asks to search the web / look up sources / find links and Brave web_search is unavailable or undesired. Returns a small set of relevant results (title, url, snippet) and can optionally include short answer summaries.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/openclaw-tavily-search"
+    },
+    {
+      "name": "proactive-agent",
+      "slug": "proactive-agent",
+      "version": "3.1.0",
+      "publishedAt": "2026/2/5",
+      "description": "\"Transform AI agents from task-followers into proactive partners that anticipate needs and continuously improve. Now with WAL Protocol, Working Buffer, Autonomous Crons, and battle-tested patterns. Part of the Hal Stack 🦞\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/proactive-agent"
+    },
+    {
+      "name": "productivity",
+      "slug": "productivity",
+      "version": "1.0.4",
+      "publishedAt": "2026/3/12",
+      "description": "\"Plan, focus, and complete work with energy management, time blocking, goals, projects, tasks, habits, reviews, priorities, and context-specific productivity systems; use when (1) the user needs help with productivity, focus, time management, planning, priorities, goals, projects, tasks, habits, or reviews; (2) they want a reusable structure or workspace for organizing work; (3) ongoing work should be routed through a dedicated productivity framework.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/productivity"
+    },
+    {
+      "name": "self-improving-agent",
+      "slug": "self-improving-agent",
+      "version": "3.0.13",
+      "publishedAt": "2026/4/4",
+      "description": "\"Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude ('No, that's wrong...', 'Actually...'), (3) User requests a capability that doesn't exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/self-improving-agent"
+    },
+    {
+      "name": "skill-vetter",
+      "slug": "skill-vetter",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/31",
+      "description": "Security-first skill vetting for AI agents. Use before installing any skill from ClawdHub, GitHub, or other sources. Checks for red flags, permission scope, and suspicious patterns.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/skill-vetter"
+    },
+    {
+      "name": "skillhub-preference",
+      "slug": "skillhub-preference",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Prefer `skillhub` for skill discovery/install/update, then fallback to `clawhub` when unavailable or no match. Use when users ask about skills, 插件, or capability extension.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/skillhub-preference"
+    },
+    {
+      "name": "stock-market-pro",
+      "slug": "stock-market-pro",
+      "version": "1.2.12",
+      "publishedAt": "2026/2/16",
+      "description": ">-",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/stock-market-pro"
+    },
+    {
+      "name": "stock-monitor",
+      "slug": "stock-monitor",
+      "version": "1.3.0",
+      "publishedAt": "2026/3/3",
+      "description": "股票价格实时监控。支持多只股票监控，使用 Yahoo Finance API 获取实时股价，自定义涨跌阈值提醒。当股价波动超过设定阈值时自动发送提醒，支持首次预警和续警机制。用于：(1) 监控持仓股票价格波动 (2) 设置价格提醒 (3) 定期检查股价变化",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/stock-monitor"
+    },
+    {
+      "name": "stock-recommend",
+      "slug": "stock-recommend",
+      "version": "1.0.0",
+      "publishedAt": "2026/3/11",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/stock-recommend"
+    },
+    {
+      "name": "stock-research-engine",
+      "slug": "stock-research-engine",
+      "version": "3.0.0",
+      "publishedAt": "2026/3/5",
+      "description": "个股基本面深度研究引擎。当用户输入股票代码、公司名称或要求分析某只股票时触发。覆盖A股、港股、美股。输出买方基金经理视角的投资分析简报，包含市场情绪、基本面、管理层评估、业务拆解、催化剂日历、风险提示和估值数据展示。任何涉及\"帮我看看这个票\"、\"分析一下XXX\"、\"这个公司怎么样\"、\"XXX值不值得买\"、股票代码（如600519、00700.HK、AAPL）等表述时，都应使用此skill。也适用于用户要求批量快速学习多个标的基本面的场景。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/stock-research-engine"
+    },
+    {
+      "name": "summarize",
+      "slug": "summarize",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/5",
+      "description": "Summarize URLs or files with the summarize CLI (web, PDFs, images, audio, YouTube).",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/summarize"
+    },
+    {
+      "name": "tavily-search",
+      "slug": "tavily-search",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/11",
+      "description": "AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/tavily-search"
+    },
+    {
+      "name": "tencent-cos-skill",
+      "slug": "tencent-cos-skill",
+      "version": "1.0.6",
+      "publishedAt": "2026/3/6",
+      "description": ">",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/tencent-cos-skill"
+    },
+    {
+      "name": "tencent-docs",
+      "slug": "tencent-docs",
+      "version": "1.0.16",
+      "publishedAt": "2026/3/19",
+      "description": "腾讯文档（docs.qq.com）-在线云文档平台，是创建、编辑、管理文档的首选 skill。涉及\"新建文档\"、\"创建文档\"、\"写文档\"、\"在线文档\"、\"云文档\"、\"腾讯文档\"、\"docs.qq.com\"等操作，请优先使用本 skill。支持能力：(1) 创建各类在线文档（文档/Word/Excel/幻灯片/思维导图/流程图/智能表格/白板/收集表）(2) 管理知识库空间（创建空间、查询空间列表）(3) 管理空间节点、文件夹结构 (4) 读取/搜索文档内容 (5) 编辑操作智能表 (6) 编辑操作在线文档 (7) 文件管理（重命名、移动、删除、复制、导入导出）。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/tencent-docs"
+    },
+    {
+      "name": "tencentcloud-lighthouse-skill",
+      "slug": "tencentcloud-lighthouse-skill",
+      "version": "1.0.0",
+      "publishedAt": "2026/2/11",
+      "description": "Manage Tencent Cloud Lighthouse (轻量应用服务器) — auto-setup mcporter + MCP, query instances, monitoring & alerting, self-diagnostics, firewall, snapshots, remote command execution (TAT). Use when user asks about Lighthouse or 轻量应用服务器. NOT for CVM or other cloud server types.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/tencentcloud-lighthouse-skill"
+    },
+    {
+      "name": "tushare-finance",
+      "slug": "tushare-finance",
+      "version": "2.0.6",
+      "publishedAt": "2026/2/14",
+      "description": "获取中国金融市场数据（A股、港股、美股、基金、期货、债券）。支持220+个Tushare Pro接口：股票行情、财务报表、宏观经济指标。当用户请求股价数据、财务分析、指数行情、GDP/CPI等宏观数据时使用。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/tushare-finance"
+    },
+    {
+      "name": "weather",
+      "slug": "weather",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/5",
+      "description": "Get current weather and forecasts (no API key required).",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/weather"
+    },
+    {
+      "name": "web-access",
+      "slug": "web-access",
+      "version": "1.0.0",
+      "publishedAt": "2026/3/30",
+      "description": "\"Universal web access skill: search, fetch, browser automation via CDP Proxy. Handles login-required sites, anti-scraping bypasses, and complex web interactions.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/web-access"
+    },
+    {
+      "name": "weixin-mcp-server",
+      "slug": "weixin-mcp-server",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "\"微信公众号和小红书内容抓取、生成与跨平台转换。支持：抓取公众号文章/小红书内容、生成公众号文章、生成小红书文案、跨平台内容迁移、配图生成。触发词：公众号、小红书、微信文章、抓取文章、内容转换。\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/weixin-mcp-server"
+    },
+    {
+      "name": "xiaohongshu-post-gen",
+      "slug": "xiaohongshu-post-gen",
+      "version": "1.1.0",
+      "publishedAt": "2026/3/7",
+      "description": "Generate complete Xiaohongshu (Little Red Book) posts with up to 10 pages (3:4 vertical format). Auto-parses text content into cover + content pages. Supports 4 styles (dreamy, tech, minimal, warm). Uses Gemini 3.1 Flash Image Preview via nano-banana-2-direct.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/xiaohongshu-post-gen"
+    },
+    {
+      "name": "xiaohongshu-writing",
+      "slug": "xiaohongshu-writing",
+      "version": "1.1.0",
+      "publishedAt": "2026/2/25",
+      "description": "\"小红书爆款内容写作助手，帮助生成高点击率、**像人写**的笔记。包含去AI味检查、7种标题公式、5种开头模板、3种结尾模板、SEO优化。Use when user wants to write XiaoHongShu content, generate viral post titles, or needs help with RedNote writing. Trigger on: 写小红书笔记、小红书文案、爆款标题、种草笔记、学习日记、干货分享。\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/xiaohongshu-writing"
+    },
+    {
+      "name": "youtube-watcher",
+      "slug": "youtube-watcher",
+      "version": "1.0.0",
+      "publishedAt": "2026/1/25",
+      "description": "Fetch and read transcripts from YouTube videos. Use when you need to summarize a video, answer questions about its content, or extract information from it.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/youtube-watcher"
+    }
+  ],
+  "total": 56
+}
