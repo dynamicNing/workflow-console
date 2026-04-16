@@ -43,5 +43,14 @@
     "enabled": true,
     "timeout": 300,
     "jobId": "923d63bf-3451-4525-a324-d7dfe72f1887"
+  },
+  {
+    "id": "social-media-collector",
+    "name": "🐦 社交媒体聚合",
+    "description": "抓取微博热搜+AI摘要，存档并推送飞书群",
+    "script": "/root/.openclaw/workspace/skills/social-media-collector/scripts/collector.py weibo",
+    "workingDir": "/root/.openclaw/workspace/skills/social-media-collector/scripts",
+    "timeout": 90,
+    "enabled": true
   }
 ]
