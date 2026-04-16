@@ -306,6 +306,99 @@ app.get('/api/image/list', (req, res) => {
   }
 });
 
+// ============================================================
+// HOOKS 系统
+// ============================================================
+
+const HOOKS_FILE = path.join(__dirname, 'hooks.json');
+const HOOK_RUNS_DIR = '/www/workflow-console/hook-runs';
+if (!fs.existsSync(HOOK_RUNS_DIR)) fs.mkdirSync(HOOK_RUNS_DIR, { recursive: true });
+
+function loadHooks() {
+  try {
+    return JSON.parse(fs.readFileSync(HOOKS_FILE, 'utf-8'));
+  } catch { return []; }
+}
+
+function getHookRuns(hookId) {
+  const runFile = path.join(HOOK_RUNS_DIR, `${hookId}.json`);
+  try {
+    return JSON.parse(fs.readFileSync(runFile, 'utf-8'));
+  } catch { return []; }
+}
+
+function saveHookRun(hookId, run) {
+  const runFile = path.join(HOOK_RUNS_DIR, `${hookId}.json`);
+  const runs = getHookRuns(hookId);
+  runs.unshift(run);
+  fs.writeFileSync(runFile, JSON.stringify(runs.slice(0, 50), null, 2));
+}
+
+// API: 获取所有 Hooks
+app.get('/api/hooks', (req, res) => {
+  try {
+    const hooks = loadHooks().map(h => ({
+      id: h.id,
+      name: h.name,
+      description: h.description,
+      enabled: h.enabled,
+      timeout: h.timeout,
+      script: h.script
+    }));
+    res.json({ ok: true, hooks });
+  } catch (e) {
+    res.json({ ok: false, error: e.message, hooks: [] });
+  }
+});
+
+// API: 触发 Hook
+app.post('/api/hooks/:id/execute', (req, res) => {
+  const { id } = req.params;
+  const hooks = loadHooks();
+  const hook = hooks.find(h => h.id === id);
+  if (!hook) return res.json({ ok: false, error: `Hook '${id}' 不存在` });
+  if (!hook.enabled) return res.json({ ok: false, error: `Hook '${id}' 已禁用` });
+
+  const runId = `run-${Date.now()}`;
+  const logFile = `/tmp/hook_${id}_${Date.now()}.log`;
+
+  // 立即返回，不阻塞
+  res.json({ ok: true, runId, message: `Hook '${hook.name}' 已触发，运行中...` });
+
+  // 异步执行
+  const { exec } = require('child_process');
+  const child = exec(
+    `bash "${hook.script}" > "${logFile}" 2>&1; echo "EXIT:$?"`,
+    { cwd: hook.workingDir || '/tmp', timeout: hook.timeout * 1000 },
+    (error, stdout, stderr) => {
+      const exitCode = stdout.includes('EXIT:') ? parseInt(stdout.split('EXIT:')[1]) : 1;
+      const status = exitCode === 0 ? 'success' : 'failed';
+      const log = fs.existsSync(logFile) ? fs.readFileSync(logFile, 'utf-8').slice(-2000) : '';
+      const run = {
+        runId,
+        startedAt: new Date().toISOString(),
+        finishedAt: new Date().toISOString(),
+        status,
+        exitCode,
+        log,
+        trigger: 'api'
+      };
+      saveHookRun(id, run);
+    }
+  );
+});
+
+// API: 获取 Hook 执行历史
+app.get('/api/hooks/:id/runs', (req, res) => {
+  const { id } = req.params;
+  const runs = getHookRuns(id);
+  res.json({ ok: true, runs });
+});
+
+// ============================================================
+// 兜底路由
+// ============================================================
+
 // 兜底 - 匹配所有未匹配路由
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

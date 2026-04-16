@@ -1,0 +1,38 @@
+[
+  {
+    "id": "folo-ai-deploy",
+    "name": "🚀 部署 folo-ai",
+    "description": "拉取 GitHub 最新代码，安装依赖，重启 PM2 服务",
+    "script": "/root/.openclaw/workspace/scripts/folo-ai-deploy.sh",
+    "workingDir": "/www/folo-ai",
+    "timeout": 120,
+    "enabled": true
+  },
+  {
+    "id": "skill-update",
+    "name": "🛠️ 更新 Skills",
+    "description": "扫描并更新所有已安装 Skills 到最新版本",
+    "script": "/root/.openclaw/workspace/scripts/skill-update.sh",
+    "workingDir": "/root/.openclaw/workspace",
+    "timeout": 300,
+    "enabled": true
+  },
+  {
+    "id": "content-sync",
+    "name": "📦 同步内容存档",
+    "description": "同步所有内容到 content-archive GitHub 仓库",
+    "script": "/root/.openclaw/workspace/scripts/content-sync.sh",
+    "workingDir": "/root/content-archive",
+    "timeout": 60,
+    "enabled": true
+  },
+  {
+    "id": "skills-sync-console",
+    "name": "🛠️ 同步 Skills 到 Console",
+    "description": "将 workspace/skills 同步到 workflow-console 并推送到 GitHub",
+    "script": "/root/.openclaw/workspace/scripts/skills-sync.sh",
+    "workingDir": "/www/workflow-console",
+    "timeout": 60,
+    "enabled": true
+  }
+]
