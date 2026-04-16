@@ -192,6 +192,73 @@ app.get('/api/skills', (req, res) => {
   }
 });
 
+// API: 生成图片
+app.post('/api/image/generate', async (req, res) => {
+  const { prompt, inputImage } = req.body;
+  if (!prompt) return res.json({ ok: false, error: 'prompt 不能为空' });
+
+  const timestamp = Date.now();
+  const outputFile = `/www/workflow-console/public/generated/${timestamp}.png`;
+  const logFile = `/tmp/gemini_gen_${timestamp}.log`;
+  const generatedDir = '/www/workflow-console/public/generated';
+  if (!fs.existsSync(generatedDir)) fs.mkdirSync(generatedDir, { recursive: true });
+
+  try {
+    // 如果有输入图片，先保存
+    if (inputImage) {
+      const inputFile = `/tmp/gemini_input_${timestamp}.png`;
+      const imgData = inputImage.startsWith('data:') ? inputImage.split(',')[1] : inputImage;
+      fs.writeFileSync(inputFile, Buffer.from(imgData, 'base64'));
+      // 调用 python 生成（编辑模式）
+      const { execSync } = require('child_process');
+      const out = execSync(`python3 /root/.openclaw/workspace/skills/gemini-image-simple/scripts/generate.py "${prompt.replace(/"/g, '\\"')}" "${outputFile}" --input "${inputFile}" > "${logFile}" 2>&1; echo "exit:$?"`, { encoding: 'utf-8', timeout: 120000 });
+      const exitOk = out.includes('exit:0');
+      if (!exitOk) {
+        const log = fs.readFileSync(logFile, 'utf-8').slice(-500);
+        return res.json({ ok: false, error: '生成失败: ' + log });
+      }
+    } else {
+      // 调用 python 生成（新图模式）
+      const { execSync } = require('child_process');
+      const out = execSync(`python3 /root/.openclaw/workspace/skills/gemini-image-simple/scripts/generate.py "${prompt.replace(/"/g, '\\"')}" "${outputFile}" > "${logFile}" 2>&1; echo "exit:$?"`, { encoding: 'utf-8', timeout: 120000 });
+      const exitOk = out.includes('exit:0');
+      if (!exitOk) {
+        const log = fs.readFileSync(logFile, 'utf-8').slice(-500);
+        return res.json({ ok: false, error: '生成失败: ' + log });
+      }
+    }
+
+    // 读取生成的图片并转为 base64
+    const imgBase64 = fs.readFileSync(outputFile).toString('base64');
+    const imageUrl = `/generated/${timestamp}.png?t=${timestamp}`;
+    res.json({ ok: true, imageUrl, timestamp });
+  } catch (e) {
+    const log = fs.existsSync(logFile) ? fs.readFileSync(logFile, 'utf-8').slice(-500) : e.message;
+    res.json({ ok: false, error: '生成失败: ' + log });
+  }
+});
+
+// API: 获取已生成的图片列表
+app.get('/api/image/list', (req, res) => {
+  try {
+    const generatedDir = '/www/workflow-console/public/generated';
+    if (!fs.existsSync(generatedDir)) return res.json({ ok: true, images: [] });
+    const files = fs.readdirSync(generatedDir)
+      .filter(f => f.endsWith('.png'))
+      .sort()
+      .reverse()
+      .slice(0, 20)
+      .map(f => ({
+        name: f,
+        url: `/generated/${f}`,
+        timestamp: parseInt(f.replace('.png', ''))
+      }));
+    res.json({ ok: true, images: files });
+  } catch (e) {
+    res.json({ ok: false, error: e.message, images: [] });
+  }
+});
+
 // 兜底 - 匹配所有未匹配路由
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
