@@ -34,5 +34,14 @@
     "workingDir": "/www/workflow-console",
     "timeout": 60,
     "enabled": true
+  },
+  {
+    "id": "hook-923d63bf",
+    "name": "Memory Dreaming Promotion",
+    "description": "触发 cron 任务：Memory Dreaming Promotion",
+    "script": "openclaw cron trigger 923d63bf-3451-4525-a324-d7dfe72f1887",
+    "enabled": true,
+    "timeout": 300,
+    "jobId": "923d63bf-3451-4525-a324-d7dfe72f1887"
   }
 ]

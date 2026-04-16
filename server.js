@@ -551,6 +551,78 @@ app.get('/api/hooks', (req, res) => {
   }
 });
 
+// API: 发现未注册 Hook 的 cron 任务（仅管理员可见）
+app.get('/api/hooks/discover', (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies[COOKIE_NAME];
+  const session = sessions.get(token);
+  if (!session || session.role !== 'admin') {
+    return res.status(403).json({ ok: false, error: '仅管理员可查看' });
+  }
+
+  try {
+    const hooks = loadHooks();
+    const hookJobIds = new Set(hooks.map(h => h.jobId));
+
+    // 获取所有 cron 任务
+    const cronOutput = execSync('openclaw cron list --json 2>/dev/null || echo "{\"jobs\":[]}"', { timeout: 10000 });
+    let raw = [];
+    try { raw = JSON.parse(cronOutput.toString().trim()); } catch {}
+    const allJobs = Array.isArray(raw) ? raw : (raw.jobs || []);
+
+    // 过滤出还没有 Hook 的任务
+    const orphanJobs = allJobs
+      .filter(j => j.id && !hookJobIds.has(j.id))
+      .map(j => ({
+        id: j.id,
+        name: j.name || j.id,
+        schedule: j.schedule?.expr || '',
+        enabled: j.enabled
+      }));
+
+    res.json({ ok: true, orphans: orphanJobs });
+  } catch (e) {
+    res.json({ ok: false, error: e.message, orphans: [] });
+  }
+});
+
+// API: 为指定 cron 任务创建 Hook（仅管理员）
+app.post('/api/hooks/from-job', (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies[COOKIE_NAME];
+  const session = sessions.get(token);
+  if (!session || session.role !== 'admin') {
+    return res.status(403).json({ ok: false, error: '仅管理员可操作' });
+  }
+
+  const { jobId, jobName } = req.body || {};
+  if (!jobId) return res.json({ ok: false, error: '缺少 jobId' });
+
+  try {
+    const hooks = loadHooks();
+    const hookId = `hook-${jobId.slice(0, 8)}`;
+    if (hooks.find(h => h.id === hookId)) {
+      return res.json({ ok: false, error: `Hook '${hookId}' 已存在` });
+    }
+
+    const newHook = {
+      id: hookId,
+      name: jobName || jobId,
+      description: `触发 cron 任务：${jobName || jobId}`,
+      script: `openclaw cron trigger ${jobId}`,
+      enabled: true,
+      timeout: 300,
+      jobId: jobId
+    };
+
+    hooks.push(newHook);
+    fs.writeFileSync(HOOKS_FILE, JSON.stringify(hooks, null, 2));
+    res.json({ ok: true, hook: { id: newHook.id, name: newHook.name } });
+  } catch (e) {
+    res.json({ ok: false, error: e.message });
+  }
+});
+
 // API: 触发 Hook（仅管理员可执行）
 app.post('/api/hooks/:id/execute', (req, res) => {
   const cookies = parseCookies(req.headers.cookie);

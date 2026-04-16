@@ -613,6 +613,18 @@
           <div v-if="hookExecuting" class="loading" style="padding:1rem;">⚡ Hook 执行中，请稍候...</div>
         </div>
 
+        <!-- 发现未注册的 cron 任务 -->
+        <div v-if="isAdmin && orphanJobs.length > 0" class="card" style="border:1px dashed rgba(102,126,234,0.4);background:rgba(102,126,234,0.04);padding:1.25rem;margin-bottom:1rem;">
+          <div style="margin-bottom:0.875rem;font-size:0.875rem;color:#667eea;">🆕 检测到 {{ orphanJobs.length }} 个定时任务尚未创建 Hook</div>
+          <div v-for="job in orphanJobs" :key="job.id" class="hook-item" style="margin-bottom:0.75rem;">
+            <div>
+              <div class="hook-name">{{ job.name }}</div>
+              <div style="font-size:0.75rem;color:#666;margin-top:0.25rem;">{{ job.schedule }} · {{ job.id }}</div>
+            </div>
+            <button class="btn" style="padding:0.375rem 0.875rem;font-size:0.8125rem;background:rgba(102,126,234,0.2);color:#667eea;" @click="createHook(job)">+ 创建 Hook</button>
+          </div>
+        </div>
+
         <!-- Hook 列表 -->
         <div class="card">
           <div v-if="hooksLoading" class="loading">加载中...</div>
@@ -837,6 +849,7 @@
         // Hooks
         const hooks = ref([]);
         const hooksLoading = ref(false);
+        const orphanJobs = ref([]);
         const executingHook = ref(null);
         const selectedHookId = ref('');
         const hookError = ref('');
@@ -852,6 +865,33 @@
             if (data.ok) hooks.value = data.hooks;
           } catch {}
           hooksLoading.value = false;
+          loadOrphanJobs();
+        }
+
+        async function loadOrphanJobs() {
+          try {
+            const res = await fetch('/api/hooks/discover');
+            const data = await res.json();
+            if (data.ok) orphanJobs.value = data.orphans;
+          } catch {}
+        }
+
+        async function createHook(job) {
+          try {
+            const res = await fetch('/api/hooks/from-job', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ jobId: job.id, jobName: job.name })
+            });
+            const data = await res.json();
+            if (data.ok) {
+              orphanJobs.value = orphanJobs.value.filter(j => j.id !== job.id);
+              showToast(`Hook "${data.hook.name}" 创建成功`);
+              loadHooks();
+            } else {
+              showToast(data.error || '创建失败');
+            }
+          } catch {}
         }
 
         async function executeHook() {
@@ -963,6 +1003,7 @@
           hooks, hooksLoading, executingHook, selectedHookId,
           hookError, hookExecuting, hookRuns, selectedHookRunId,
           loadHooks, executeHook, quickExecute, viewHookRuns,
+          orphanJobs, loadOrphanJobs, createHook,
           currentUser, isAdmin, logout
         };
       }
