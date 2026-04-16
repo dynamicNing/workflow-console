@@ -11,7 +11,112 @@ const PORT = process.env.PORT || 3099;
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
 app.use(express.json());
+// ============================================================
+// 认证系统（Cookie Session）
+// ============================================================
+
+const AUTH_FILE = path.join(__dirname, 'auth.json');
+const COOKIE_NAME = 'console_session';
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7天
+
+let authConfig = { username: 'admin', password: 'Nomi2026Console', sessionSecret: 'default-secret' };
+try { authConfig = JSON.parse(fs.readFileSync(AUTH_FILE, 'utf-8')); } catch {}
+
+// session store: token -> { createdAt }
+const sessions = new Map();
+
+function generateToken() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  for (let i = 0; i < 32; i++) token += chars[Math.floor(Math.random() * chars.length)];
+  return token;
+}
+
+function parseCookies(header) {
+  const cookies = {};
+  if (!header) return cookies;
+  header.split(';').forEach(c => {
+    const [k, ...v] = c.trim().split('=');
+    if (k) cookies[k] = decodeURIComponent(v.join('='));
+  });
+  return cookies;
+}
+
+// 登录
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body || {};
+  if (username === authConfig.username && password === authConfig.password) {
+    const token = generateToken();
+    sessions.set(token, { createdAt: Date.now() });
+    res.cookie(COOKIE_NAME, token, {
+      httpOnly: true,
+      maxAge: SESSION_TTL_MS,
+      sameSite: 'lax',
+      secure: req.headers['x-forwarded-proto'] === 'https' || req.protocol === 'https'
+    });
+    res.json({ ok: true, message: '登录成功' });
+  } else {
+    res.json({ ok: false, error: '用户名或密码错误' });
+  }
+});
+
+// 登出
+app.post('/api/auth/logout', (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies[COOKIE_NAME];
+  if (token) sessions.delete(token);
+  res.clearCookie(COOKIE_NAME);
+  res.json({ ok: true });
+});
+
+// 登录状态
+app.get('/api/auth/status', (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies[COOKIE_NAME];
+  if (token && sessions.has(token)) {
+    const session = sessions.get(token);
+    if (Date.now() - session.createdAt < SESSION_TTL_MS) {
+      return res.json({ ok: true, loggedIn: true });
+    }
+    sessions.delete(token);
+  }
+  res.json({ ok: true, loggedIn: false });
+});
+
+// 登录页（未登录时重定向到这里）
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// SPA 前端路由保护：未登录时重定向到登录页（必须在 static 之前）
+app.use((req, res, next) => {
+  if (req.path === '/login.html' || req.path.startsWith('/api/') || req.path.startsWith('/generated/')) return next();
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies[COOKIE_NAME];
+  if (!token || !sessions.has(token) || Date.now() - sessions.get(token).createdAt >= SESSION_TTL_MS) {
+    if (token) sessions.delete(token);
+    return res.redirect('/login.html');
+  }
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api', (req, res, next) => {
+  // 排除登录本身
+  if (req.path === '/auth/login' || req.path === '/auth/logout' || req.path === '/auth/status') {
+    return next();
+  }
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies[COOKIE_NAME];
+  if (!token || !sessions.has(token) || Date.now() - sessions.get(token).createdAt >= SESSION_TTL_MS) {
+    if (token) sessions.delete(token);
+    return res.status(401).json({ ok: false, error: '请先登录', requireAuth: true });
+  }
+  next();
+});
+
+// ============================================================
+// 任务名称映射（短名）
 
 // 任务名称映射（短名）
 const JOB_NAMES = {

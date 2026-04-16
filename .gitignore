@@ -2,3 +2,4 @@ node_modules/
 generated/
 hook-runs/
 ecosystem.config.js
+auth.json
