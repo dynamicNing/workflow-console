@@ -264,6 +264,75 @@
     .run-item:last-child { border-bottom: none; }
     .run-log { font-size: 0.75rem; color: #555; font-family: monospace; white-space: pre-wrap; word-break: break-all; max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 6px; margin-top: 0.375rem; }
     select.search-input { cursor: pointer; }
+
+    /* ============================================================
+       移动端适配
+    ============================================================ */
+    @media (max-width: 768px) {
+      body { font-size: 14px; }
+      .header { padding: 1rem 1rem 0; }
+      .header h1 { font-size: 1.2rem; }
+      .tabs { overflow-x: auto; gap: 0; -webkit-overflow-scrolling: touch; }
+      .tab { padding: 0.625rem 1rem; font-size: 0.8125rem; white-space: nowrap; }
+      .container { padding: 1rem; }
+
+      /* 任务列表 */
+      .job-item {
+        grid-template-columns: 1fr auto;
+        gap: 0.75rem;
+        padding: 0.875rem 1rem;
+      }
+      .job-item > div:nth-child(2),
+      .job-item > div:nth-child(3) { display: none; }
+      .time-info { text-align: left; }
+      .time-label { display: none; }
+      .time-value { font-size: 0.75rem; color: #888; }
+      .job-meta { flex-wrap: wrap; gap: 0.25rem; }
+
+      /* Skills */
+      .skill-grid { grid-template-columns: 1fr; }
+      .skills-search { flex-wrap: wrap; }
+      .search-input { min-width: 100%; }
+      .skill-count { width: 100%; text-align: right; margin-top: 0.5rem; }
+
+      /* Hooks */
+      .hook-item { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .hook-item > div:last-child { flex-direction: row; width: 100%; justify-content: flex-start; }
+
+      /* Image Gen */
+      .img-gen-form { gap: 0.5rem; }
+      textarea.search-input { min-height: 60px; }
+      .generated-image img { max-height: 300px; }
+
+      /* 云文档 */
+      .cloud-item { flex-direction: column; align-items: flex-start; gap: 0.375rem; }
+      .cloud-date { font-size: 0.75rem; }
+
+      /* 内容存档 */
+      .content-item { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+
+      /* Toast */
+      .toast { left: 1rem; right: 1rem; bottom: 1rem; font-size: 0.8125rem; }
+
+      /* 快捷链接 */
+      .external-links { grid-template-columns: 1fr 1fr; }
+
+      /* Tab badge */
+      .tab .count { font-size: 0.6875rem; padding: 0.05rem 0.375rem; }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 { font-size: 1rem; }
+      .tab { padding: 0.5rem 0.75rem; font-size: 0.75rem; }
+      .container { padding: 0.75rem; }
+      .section-title { font-size: 1rem; }
+      .job-name { font-size: 0.875rem; }
+      .btn { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+      .status-badge { font-size: 0.6875rem; padding: 0.2rem 0.5rem; }
+      .external-links { grid-template-columns: 1fr; }
+      .refresh-bar { flex-wrap: wrap; gap: 0.5rem; }
+      .refresh-btn { font-size: 0.75rem; padding: 0.375rem 0.75rem; }
+    }
     .cloud-group { border-bottom: 1px solid rgba(255,255,255,0.04); }
     .cloud-group:last-child { border-bottom: none; }
     .cloud-group-header { display:flex; align-items:center; justify-content:space-between; padding:0.75rem 1.25rem; background:rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.04); }
