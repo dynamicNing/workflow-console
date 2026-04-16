@@ -244,6 +244,7 @@
     }
     .skill-cat-workspace { background: rgba(102,126,234,0.15); color: #a78bfa; }
     .skill-cat-global { background: rgba(0,200,150,0.1); color: #00c896; }
+    textarea.search-input { resize: vertical; min-height: 80px; }
   </style>
 </head>
 <body>
@@ -260,6 +261,9 @@
         </div>
         <div class="tab" :class="{active: tab === 'skills'}" @click="tab = 'skills'; if (!skills.length) loadSkills()">
           🛠️ Skills <span class="count">{{ skillsTotal }}</span>
+        </div>
+        <div class="tab" :class="{active: tab === 'image'}" @click="tab = 'image'; loadGeneratedImages()">
+          🎨 Image Gen <span class="count">Gemini</span>
         </div>
       </div>
     </div>
@@ -378,6 +382,64 @@
         </div>
       </div>
 
+      <!-- Image Gen -->
+      <div class="section" v-if="tab === 'image'">
+        <div class="section-title">🎨 Gemini 图像生成</div>
+        <div class="card" style="padding:1.5rem;">
+          <div class="img-gen-form">
+            <div style="margin-bottom:1rem;">
+              <textarea
+                class="search-input"
+                v-model="imagePrompt"
+                placeholder="描述你想要生成的图像..."
+                rows="3"
+                style="resize:vertical;width:100%;"
+              ></textarea>
+            </div>
+            <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+              <label class="filter-btn" style="cursor:pointer;">
+                📎 {{ imageInputFile ? imageInputFile.name : '上传参考图（可选）' }}
+                <input type="file" accept="image/*" @change="imageFileChanged" style="display:none;"/>
+              </label>
+              <button class="btn btn-trigger" @click="generateImage" :disabled="imageGenerating || !imagePrompt.trim()">
+                {{ imageGenerating ? '⏳ 生成中...' : '✨ 生成图像' }}
+              </button>
+              <span v-if="imageError" style="color:#ff6b6b;font-size:0.8125rem;">{{ imageError }}</span>
+            </div>
+            <div v-if="imageInputPreview" style="margin-top:1rem;text-align:center;">
+              <div style="font-size:0.75rem;color:#666;margin-bottom:0.5rem;">参考图预览</div>
+              <img :src="imageInputPreview" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);" />
+            </div>
+          </div>
+
+          <!-- 生成结果 -->
+          <div v-if="generatedImageUrl" style="margin-top:1.5rem;text-align:center;">
+            <div style="font-size:0.75rem;color:#666;margin-bottom:0.75rem;">生成结果</div>
+            <img :src="generatedImageUrl" style="max-width:100%;max-height:500px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);" />
+            <div style="margin-top:0.75rem;">
+              <a :href="generatedImageUrl" download class="filter-btn" style="text-decoration:none;">📥 下载图片</a>
+            </div>
+          </div>
+
+          <!-- 历史记录 -->
+          <div style="margin-top:1.5rem;">
+            <div style="font-size:0.8125rem;color:#666;margin-bottom:0.75rem;">最近生成</div>
+            <div v-if="imageLoadingHistory" class="loading" style="padding:1rem;">加载中...</div>
+            <div v-else-if="!generatedImages.length" class="empty" style="padding:1rem;">暂无历史记录</div>
+            <div v-else style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+              <div
+                v-for="img in generatedImages"
+                :key="img.name"
+                style="cursor:pointer;"
+                @click="generatedImageUrl = img.url + '?r=' + Math.random()"
+              >
+                <img :src="img.url" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.08);" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Toast -->
@@ -466,6 +528,70 @@
           triggering.value = null;
         }
 
+        // Image Gen
+        const imagePrompt = ref('');
+        const imageInputFile = ref(null);
+        const imageInputPreview = ref('');
+        const imageGenerating = ref(false);
+        const imageError = ref('');
+        const generatedImageUrl = ref('');
+        const generatedImages = ref([]);
+        const imageLoadingHistory = ref(false);
+
+        function imageFileChanged(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          imageInputFile.value = file;
+          const reader = new FileReader();
+          reader.onload = ev => { imageInputPreview.value = ev.target.result; };
+          reader.readAsDataURL(file);
+        }
+
+        async function generateImage() {
+          if (!imagePrompt.value.trim()) return;
+          imageGenerating.value = true;
+          imageError.value = '';
+          generatedImageUrl.value = '';
+          try {
+            const formData = new FormData();
+            formData.append('prompt', imagePrompt.value);
+            if (imageInputFile.value) {
+              formData.append('inputImage', imageInputPreview.value);
+            }
+            const res = await fetch('/api/image/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                prompt: imagePrompt.value,
+                inputImage: imageInputPreview.value || null
+              })
+            });
+            const data = await res.json();
+            if (data.ok) {
+              generatedImageUrl.value = data.imageUrl + '?r=' + Date.now();
+              showToast('✅ 图像生成成功');
+              loadGeneratedImages();
+            } else {
+              imageError.value = data.error || '生成失败';
+              showToast('❌ ' + (data.error || '生成失败'), 'error');
+            }
+          } catch (e) {
+            imageError.value = e.message;
+            showToast('❌ ' + e.message, 'error');
+          }
+          imageGenerating.value = false;
+        }
+
+        async function loadGeneratedImages() {
+          imageLoadingHistory.value = true;
+          try {
+            const res = await fetch('/api/image/list');
+            const data = await res.json();
+            if (data.ok) generatedImages.value = data.images;
+          } catch {}
+          imageLoadingHistory.value = false;
+        }
+
         const contentTotal = computed(() => content.value.reduce((s, c) => s + c.files.length, 0));
         const skillsTotal = computed(() => skills.value.length);
         const filteredSkills = computed(() => {
@@ -489,7 +615,11 @@
           triggering, jobError, contentError, skillsError, toast,
           skillSearch, skillFilter, filteredSkills,
           contentTotal, skillsTotal,
-          loadJobs, loadContent, loadSkills, triggerJob
+          loadJobs, loadContent, loadSkills, triggerJob,
+          imagePrompt, imageInputFile, imageInputPreview,
+          imageGenerating, imageError, generatedImageUrl,
+          generatedImages, imageLoadingHistory,
+          imageFileChanged, generateImage, loadGeneratedImages
         };
       }
     }).mount('#app');
