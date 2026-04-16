@@ -23,6 +23,52 @@ const JOB_NAMES = {
   '923d63bf-3451-4525-a324-d7dfe72f1887': '💭 Memory Dreaming Promotion'
 };
 
+// 任务详情：云文档、存档路径
+const JOB_DETAILS = {
+  '14e827f4-eb06-4c98-91b8-00928e638de3': {
+    cloudDoc: true,
+    cloudDocUrl: 'openclaw 内置发送',
+    mdArchive: true,
+    mdArchivePath: 'content-archive/ai-digest/YYYY-MM-DD.md',
+    description: '每日 AI 行业资讯摘要，覆盖 Newsletter/社区/产品/融资/研究/监管/开源/中文圈 8 维度'
+  },
+  '52542803-71ee-4f7d-826d-4652b945ed85': {
+    cloudDoc: true,
+    cloudDocUrl: 'openclaw 内置发送',
+    mdArchive: true,
+    mdArchivePath: 'content-archive/economic-policy/YYYY-MM-DD.md',
+    description: '每日经济政策资讯，整合 10 大官媒来源（新华社/人民日报/央视等）'
+  },
+  '865787cb-f15a-484b-a6ba-f1b88fd00fb0': {
+    cloudDoc: true,
+    cloudDocUrl: 'openclaw 内置发送',
+    mdArchive: true,
+    mdArchivePath: 'content-archive/skill-updates/YYYY-MM-DD.md',
+    description: '每日热门 Skill 更新汇总'
+  },
+  'a0240533-ab2d-4da4-9079-0b1433014eae': {
+    cloudDoc: true,
+    cloudDocUrl: 'openclaw 内置发送',
+    mdArchive: false,
+    mdArchivePath: null,
+    description: 'A股半导体设备板块行情播报（北方华创/中微/拓荆/长川等 + ETF159516）'
+  },
+  'd92e41f3-88f2-4f51-8648-cdbfdec1a0a4': {
+    cloudDoc: true,
+    cloudDocUrl: 'openclaw 内置发送',
+    mdArchive: true,
+    mdArchivePath: 'content-archive/overseas-dev/YYYY-MM-DD.md',
+    description: '互联网出海开发专题集，Top 5 文章精选'
+  },
+  '923d63bf-3451-4525-a324-d7dfe72f1887': {
+    cloudDoc: true,
+    cloudDocUrl: 'openclaw 内置发送',
+    mdArchive: false,
+    mdArchivePath: null,
+    description: 'Memory Dreaming 增强任务'
+  }
+};
+
 // 内容存档映射
 const CONTENT_MAP = {
   '🤖 AI Builders Digest': { dir: 'ai-digest', repo: 'content-archive' },
@@ -61,7 +107,8 @@ app.get('/api/jobs', (req, res) => {
       lastStatus: job.state?.lastRunStatus || '-',
       status: job.state?.lastStatus || 'unknown',
       delivery: job.delivery?.mode || '-',
-      channel: job.delivery?.channel || '-'
+      channel: job.delivery?.channel || '-',
+      ...(JOB_DETAILS[job.id] || {})
     }));
     res.json({ ok: true, jobs });
   } catch (e) {

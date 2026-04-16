@@ -74,7 +74,9 @@
     .job-item:last-child { border-bottom: none; }
     .job-item:hover { background: rgba(255,255,255,0.02); }
     .job-name { font-weight: 500; font-size: 0.9375rem; }
-    .job-meta { font-size: 0.75rem; color: #666; margin-top: 0.25rem; }
+    .job-meta { font-size: 0.75rem; color: #666; margin-top: 0.25rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.25rem; }
+    .job-desc { font-size: 0.75rem; color: #555; margin-top: 0.375rem; }
+    .job-archive-path { font-size: 0.6875rem; color: #444; margin-top: 0.25rem; font-family: monospace; }
     .job-schedule { font-size: 0.75rem; color: #555; font-family: monospace; }
     .status-badge {
       padding: 0.25rem 0.75rem;
@@ -298,7 +300,13 @@
               <div class="job-meta">
                 <span>📅 {{ job.schedule }}</span>
                 <span style="margin-left:0.75rem">📢 {{ job.channel }}</span>
+                <span v-if="job.cloudDoc" style="margin-left:0.75rem;color:#667eea;">📄 云文档</span>
+                <span v-else style="margin-left:0.75rem;color:#555;">📄 云文档</span>
+                <span v-if="job.mdArchive" style="margin-left:0.5rem;color:#00c896;">📦 md存档</span>
+                <span v-else style="margin-left:0.5rem;color:#444;">📦 md存档</span>
               </div>
+              <div v-if="job.description" class="job-desc">{{ job.description }}</div>
+              <div v-if="job.mdArchive && job.mdArchivePath" class="job-archive-path">→ {{ job.mdArchivePath }}</div>
             </div>
             <div class="time-info">
               <div class="time-label">下次执行</div>
