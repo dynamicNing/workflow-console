@@ -264,6 +264,16 @@
     .run-item:last-child { border-bottom: none; }
     .run-log { font-size: 0.75rem; color: #555; font-family: monospace; white-space: pre-wrap; word-break: break-all; max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 6px; margin-top: 0.375rem; }
     select.search-input { cursor: pointer; }
+    .cloud-group { border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .cloud-group:last-child { border-bottom: none; }
+    .cloud-group-header { display:flex; align-items:center; justify-content:space-between; padding:0.75rem 1.25rem; background:rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.04); }
+    .cloud-group-job { font-weight:600;font-size:0.875rem; }
+    .cloud-group-count { font-size:0.75rem;color:#555; }
+    .cloud-item { display:flex; align-items:center; gap:1rem; padding:0.75rem 1.25rem; border-bottom:1px solid rgba(255,255,255,0.03); }
+    .cloud-item:last-child { border-bottom:none; }
+    .cloud-date { font-size:0.8125rem;color:#666;min-width:140px; }
+    .cloud-url { font-size:0.8125rem;color:#667eea;text-decoration:none;word-break:break-all; }
+    .cloud-url:hover { text-decoration:underline; }
   </style>
 </head>
 <body>
@@ -277,6 +287,9 @@
         </div>
         <div class="tab" :class="{active: tab === 'content'}" @click="tab = 'content'">
           📂 内容存档 <span class="count">{{ contentTotal }}</span>
+        </div>
+        <div class="tab" :class="{active: tab === 'cloud'}" @click="tab = 'cloud'; loadCloudDocs()">
+          ☁️ 云文档 <span class="count">{{ cloudDocs.length }}</span>
         </div>
         <div class="tab" :class="{active: tab === 'skills'}" @click="tab = 'skills'; if (!skills.length) loadSkills()">
           🛠️ Skills <span class="count">{{ skillsTotal }}</span>
@@ -373,6 +386,40 @@
           <div v-if="!contentLoading && !content.length && !contentError" class="empty">
             暂无存档内容
           </div>
+        </div>
+      </div>
+
+      <!-- 云文档 -->
+      <div class="section" v-if="tab === 'cloud'">
+        <div class="refresh-bar">
+          <div class="section-title" style="margin-bottom:0">☁️ 飞书云文档记录</div>
+          <button class="refresh-btn" @click="loadCloudDocs" :disabled="cloudLoading">
+            🔄 {{ cloudLoading ? '加载中...' : '刷新' }}
+          </button>
+        </div>
+        <div class="card">
+          <div v-if="cloudLoading" class="loading">加载中...</div>
+          <div v-else-if="cloudError" class="error-msg">{{ cloudError }}</div>
+          <div v-else-if="!cloudDocs.length" class="empty">暂无云文档记录</div>
+          <div v-else>
+            <div v-for="(group, idx) in cloudDocsGrouped" :key="idx" class="cloud-group">
+              <div class="cloud-group-header">
+                <span class="cloud-group-job">{{ group.jobName }}</span>
+                <span class="cloud-group-count">{{ group.docs.length }} 篇</span>
+              </div>
+              <div v-for="doc in group.docs" :key="doc.docUrl" class="cloud-item">
+                <div class="cloud-date">{{ doc.datetime }}</div>
+                <div class="cloud-link">
+                  <a :href="doc.docUrl" target="_blank" class="cloud-url">
+                    📄 {{ doc.docUrl }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:0.75rem;font-size:0.75rem;color:#444;text-align:center;">
+          仅记录 3 个允许存档的 cron（AI Digest / 经济政策 / 出海专题）
         </div>
       </div>
 
@@ -685,6 +732,32 @@
           imageLoadingHistory.value = false;
         }
 
+        // Cloud Docs
+        const cloudDocs = ref([]);
+        const cloudLoading = ref(false);
+        const cloudError = ref('');
+
+        async function loadCloudDocs() {
+          cloudLoading.value = true;
+          cloudError.value = '';
+          try {
+            const res = await fetch('/api/cloud-docs');
+            const data = await res.json();
+            if (data.ok) cloudDocs.value = data.docs;
+            else cloudError.value = data.error || '加载失败';
+          } catch (e) { cloudError.value = e.message; }
+          cloudLoading.value = false;
+        }
+
+        const cloudDocsGrouped = computed(() => {
+          const groups = {};
+          for (const doc of cloudDocs.value) {
+            if (!groups[doc.jobId]) groups[doc.jobId] = { jobName: doc.jobName, docs: [] };
+            groups[doc.jobId].docs.push(doc);
+          }
+          return Object.values(groups);
+        });
+
         // Hooks
         const hooks = ref([]);
         const hooksLoading = ref(false);
@@ -788,6 +861,7 @@
           imageGenerating, imageError, generatedImageUrl,
           generatedImages, imageLoadingHistory,
           imageFileChanged, generateImage, loadGeneratedImages,
+          cloudDocs, cloudLoading, cloudError, cloudDocsGrouped, loadCloudDocs,
           hooks, hooksLoading, executingHook, selectedHookId,
           hookError, hookExecuting, hookRuns, selectedHookRunId,
           loadHooks, executeHook, quickExecute, viewHookRuns

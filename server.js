@@ -190,6 +190,73 @@ app.get('/api/content', (req, res) => {
   }
 });
 
+// API: 获取云文档记录（从 cron run JSONL 中提取飞书文档链接）
+// OpenClaw 在每次 run 后覆盖 summary，故仅能获取各 job 最新的文档链接
+const CLOUD_DOC_JOBS = {
+  '14e827f4-eb06-4c98-91b8-00928e638de3': { name: '🤖 AI Builders Digest', category: 'ai-digest' },
+  '52542803-71ee-4f7d-826d-4652b945ed85': { name: '📋 每日经济政策资讯', category: 'economic-policy' },
+  'd92e41f3-88f2-4f51-8648-cdbfdec1a0a4': { name: '🌍 互联网出海开发专题集', category: 'overseas-dev' }
+};
+
+app.get('/api/cloud-docs', (req, res) => {
+  try {
+    const runsDir = '/root/.openclaw/cron/runs';
+    const docPattern = /https:\/\/feishu\.cn\/docx\/([a-zA-Z0-9]+)/g;
+    const seenUrls = new Set();
+    const results = [];
+
+    if (!fs.existsSync(runsDir)) return res.json({ ok: true, docs: [] });
+
+    // 扫描所有 cron runs JSONL 文件
+    const files = fs.readdirSync(runsDir).filter(f => f.endsWith('.jsonl'));
+    for (const fname of files) {
+      const jobId = fname.replace('.jsonl', '');
+      const jobInfo = CLOUD_DOC_JOBS[jobId] || null;
+      const runFile = path.join(runsDir, fname);
+      const content = fs.readFileSync(runFile, 'utf-8');
+      const lines = content.trim().split('\n').filter(l => l.startsWith('{'));
+
+      for (const line of lines) {
+        try {
+          const run = JSON.parse(line);
+          if (run.status !== 'ok') continue;
+          const summary = run.summary || '';
+          const urls = [...summary.matchAll(docPattern)];
+          if (!urls.length) continue;
+          const url = 'https://feishu.cn/docx/' + urls[0][1];
+          if (seenUrls.has(url)) continue;
+          seenUrls.add(url);
+          const ts = run.ts || 0;
+          const d = new Date(ts);
+          results.push({
+            jobId,
+            jobName: jobInfo ? jobInfo.name : jobId.slice(0, 8),
+            category: jobInfo ? jobInfo.category : 'other',
+            docUrl: url,
+            date: d.toISOString().slice(0, 10),
+            datetime: d.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }),
+            ts
+          });
+        } catch { continue; }
+      }
+    }
+
+    results.sort((a, b) => b.ts - a.ts);
+
+    // 按 job 分组，每组取最新一条
+    const grouped = {};
+    for (const r of results) {
+      if (!grouped[r.jobId] || r.ts > grouped[r.jobId].ts) {
+        grouped[r.jobId] = r;
+      }
+    }
+    const docs = Object.values(grouped).sort((a, b) => b.ts - a.ts);
+    res.json({ ok: true, docs, total: docs.length });
+  } catch (e) {
+    res.json({ ok: false, error: e.message, docs: [], total: 0 });
+  }
+});
+
 // API: 获取所有 Skills
 app.get('/api/skills', (req, res) => {
   try {
