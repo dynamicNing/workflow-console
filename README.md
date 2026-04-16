@@ -136,6 +136,14 @@ curl -X POST https://console.folo-ai.com/api/jobs/14e827f4-eb06-4c98-91b8-00928e
 
 ## 🚀 部署指南
 
+### ⚠️ 访问凭证
+
+控制台已启用 **HTTP Basic Auth** 保护：
+- 用户名：`admin`
+- 密码：`Nomi2026Console`（请在 `.env` 或 `~/.bashrc` 中修改）
+
+
+
 ### 环境要求
 
 - Node.js ≥ 18
@@ -181,6 +189,10 @@ server {
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+
+        # HTTP Basic Auth
+        auth_basic "Workflow Console - 请输入密码";
+        auth_basic_user_file /etc/nginx/.htpasswd-console;
     }
 
     listen 443 ssl;
