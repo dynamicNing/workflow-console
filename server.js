@@ -134,6 +134,64 @@ app.get('/api/content', (req, res) => {
   }
 });
 
+// API: 获取所有 Skills
+app.get('/api/skills', (req, res) => {
+  try {
+    const skillsDir = '/root/.openclaw/workspace/skills';
+    const globalDir = '/root/.local/share/pnpm/global/5/.pnpm/openclaw@2026.4.12_@emnapi+core@1.9.2_@emnapi+runtime@1.9.2_@napi-rs+canvas@0.1.97_@typ_0cce31112b9f587783dcad3a63b36617/node_modules/openclaw/skills';
+    
+    function parseFrontmatter(content) {
+      const match = content.match(/^---\n([\s\S]*?)\n---/);
+      if (!match) return { name: '', description: '', emoji: '' };
+      const fm = {};
+      match[1].split('\n').forEach(line => {
+        const [key, ...rest] = line.split(':');
+        if (key && rest.length) fm[key.trim()] = rest.join(':').trim();
+      });
+      return fm;
+    }
+    
+    function readSkills(dir) {
+      if (!fs.existsSync(dir)) return [];
+      return fs.readdirSync(dir).filter(s => !s.startsWith('.')).map(name => {
+        const skillPath = path.join(dir, name);
+        if (!fs.statSync(skillPath).isDirectory()) return null;
+        const metaPath = path.join(skillPath, '_meta.json');
+        const skillMdPath = path.join(skillPath, 'SKILL.md');
+        let meta = {};
+        let description = '';
+        let emoji = '';
+        try {
+          if (fs.existsSync(metaPath)) meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+          if (fs.existsSync(skillMdPath)) {
+            const content = fs.readFileSync(skillMdPath, 'utf-8');
+            const fm = parseFrontmatter(content);
+            description = fm.description || '';
+            const md = JSON.parse(meta.metadata || '{}');
+            emoji = md.clawdbot?.emoji || '';
+          }
+        } catch {}
+        return {
+          name: meta.slug || name,
+          slug: meta.slug || name,
+          version: meta.version || '-',
+          publishedAt: meta.publishedAt ? new Date(meta.publishedAt).toLocaleDateString('zh-CN') : '-',
+          description,
+          emoji,
+          category: dir.includes('workspace') ? 'workspace' : 'global',
+          path: skillPath
+        };
+      }).filter(Boolean);
+    }
+    
+    const workspaceSkills = readSkills(skillsDir);
+    const globalSkills = readSkills(globalDir);
+    res.json({ ok: true, skills: workspaceSkills, total: workspaceSkills.length + globalSkills.length });
+  } catch (e) {
+    res.json({ ok: false, error: e.message, skills: [], total: 0 });
+  }
+});
+
 // 兜底 - 匹配所有未匹配路由
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
