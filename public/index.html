@@ -350,6 +350,10 @@
     <div class="header">
       <h1>⚡ Workflow Console</h1>
       <p>OpenClaw 工作流控制台</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <span style="font-size:0.8125rem;color:#888;">{{ currentUser.label || currentUser.username }}</span>
+        <button class="btn" style="padding:0.3rem 0.75rem;font-size:0.75rem;background:rgba(255,255,255,0.06);cursor:pointer;" @click="logout">退出</button>
+      </div>
       <div class="tabs">
         <div class="tab" :class="{active: tab === 'jobs'}" @click="tab = 'jobs'">
           📋 定时任务 <span class="count">{{ jobs.length }}</span>
@@ -408,7 +412,7 @@
                 <span v-else style="margin-left:0.5rem;color:#444;">📦 md存档</span>
               </div>
               <div v-if="job.description" class="job-desc">{{ job.description }}</div>
-              <div v-if="job.mdArchive && job.mdArchivePath" class="job-archive-path">→ {{ job.mdArchivePath }}</div>
+              <div v-if="job.mdArchive && job.mdArchivePath && isAdmin" class="job-archive-path">→ {{ job.mdArchivePath }}</div>
             </div>
             <div class="time-info">
               <div class="time-label">下次执行</div>
@@ -422,7 +426,7 @@
               <span class="status-badge" :class="'status-' + job.status">
                 {{ job.status === 'ok' ? '✓ 正常' : job.status === 'errored' ? '✗ 错误' : '?' }}
               </span>
-              <button class="btn btn-trigger" @click="triggerJob(job)" :disabled="triggering === job.id">
+              <button v-if="isAdmin" class="btn btn-trigger" @click="triggerJob(job)" :disabled="triggering === job.id">
                 {{ triggering === job.id ? '触发中...' : '▶ 触发' }}
               </button>
             </div>
@@ -545,7 +549,7 @@
                 📎 {{ imageInputFile ? imageInputFile.name : '上传参考图（可选）' }}
                 <input type="file" accept="image/*" @change="imageFileChanged" style="display:none;"/>
               </label>
-              <button class="btn btn-trigger" @click="generateImage" :disabled="imageGenerating || !imagePrompt.trim()">
+              <button v-if="isAdmin" class="btn btn-trigger" @click="generateImage" :disabled="imageGenerating || !imagePrompt.trim()">
                 {{ imageGenerating ? '⏳ 生成中...' : '✨ 生成图像' }}
               </button>
               <span v-if="imageError" style="color:#ff6b6b;font-size:0.8125rem;">{{ imageError }}</span>
@@ -601,7 +605,7 @@
               <option value="">选择要执行的 Hook...</option>
               <option v-for="h in hooks" :key="h.id" :value="h.id">{{ h.name }}</option>
             </select>
-            <button class="btn btn-trigger" @click="executeHook" :disabled="executingHook || !selectedHookId">
+            <button v-if="isAdmin" class="btn btn-trigger" @click="executeHook" :disabled="executingHook || !selectedHookId">
               {{ executingHook ? '⏳ 执行中...' : '⚡ 执行' }}
             </button>
           </div>
@@ -622,7 +626,7 @@
               <div class="hook-meta">脚本: {{ h.script }}</div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
-              <button class="btn btn-trigger" @click="quickExecute(h.id)" :disabled="executingHook === h.id || !h.enabled">
+              <button v-if="isAdmin" class="btn btn-trigger" @click="quickExecute(h.id)" :disabled="executingHook === h.id || !h.enabled">
                 {{ executingHook === h.id ? '⏳...' : '⚡ 执行' }}
               </button>
               <button class="refresh-btn" style="padding:0.3rem 0.75rem;" @click="viewHookRuns(h.id)">📜 历史</button>
@@ -675,6 +679,9 @@
         const contentError = ref('');
         const skillsError = ref('');
         const toast = ref(null);
+        const currentUser = ref({ role: null, label: '', username: '' });
+        const isAdmin = computed(() => currentUser.value.role === 'admin');
+        const currentUser = ref({ role: null, label: '', username: '' });
         const skillSearch = ref('');
         const skillFilter = ref('all');
 
@@ -922,11 +929,17 @@
               window.location.href = '/login.html';
               return false;
             }
+            currentUser.value = { role: data.role, label: data.label || '', username: data.username || '' };
           } catch {
             window.location.href = '/login.html';
             return false;
           }
           return true;
+        }
+
+        async function logout() {
+          await fetch('/api/auth/logout', { method: 'POST' });
+          window.location.href = '/login.html';
         }
 
         onMounted(async () => {
@@ -949,7 +962,8 @@
           cloudDocs, cloudLoading, cloudError, cloudDocsGrouped, loadCloudDocs,
           hooks, hooksLoading, executingHook, selectedHookId,
           hookError, hookExecuting, hookRuns, selectedHookRunId,
-          loadHooks, executeHook, quickExecute, viewHookRuns
+          loadHooks, executeHook, quickExecute, viewHookRuns,
+          currentUser, isAdmin, logout
         };
       }
     }).mount('#app');

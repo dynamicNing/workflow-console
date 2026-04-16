@@ -19,8 +19,26 @@ const AUTH_FILE = path.join(__dirname, 'auth.json');
 const COOKIE_NAME = 'console_session';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7天
 
-let authConfig = { username: 'admin', password: 'Nomi2026Console', sessionSecret: 'default-secret' };
-try { authConfig = JSON.parse(fs.readFileSync(AUTH_FILE, 'utf-8')); } catch {}
+let authConfig = {
+  users: [
+    { username: 'admin', password: 'Nomi2026Console', role: 'admin', label: '管理员' },
+    { username: 'guest', password: 'guest', role: 'guest', label: '游客' }
+  ],
+  sessionSecret: 'default-secret'
+};
+try {
+  const loaded = JSON.parse(fs.readFileSync(AUTH_FILE, 'utf-8'));
+  if (loaded.users) authConfig = loaded;
+  else if (loaded.username) {
+    // 兼容旧格式
+    authConfig.users = [{
+      username: loaded.username,
+      password: loaded.password,
+      role: 'admin',
+      label: '管理员'
+    }];
+  }
+} catch {}
 
 // session store: token -> { createdAt }
 const sessions = new Map();
@@ -45,9 +63,10 @@ function parseCookies(header) {
 // 登录
 app.post('/api/auth/login', (req, res) => {
   const { username, password } = req.body || {};
-  if (username === authConfig.username && password === authConfig.password) {
+  const user = authConfig.users.find(u => u.username === username && u.password === password);
+  if (user) {
     const token = generateToken();
-    sessions.set(token, { createdAt: Date.now() });
+    sessions.set(token, { createdAt: Date.now(), role: user.role, username: user.username, label: user.label });
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
       maxAge: SESSION_TTL_MS,
@@ -76,11 +95,11 @@ app.get('/api/auth/status', (req, res) => {
   if (token && sessions.has(token)) {
     const session = sessions.get(token);
     if (Date.now() - session.createdAt < SESSION_TTL_MS) {
-      return res.json({ ok: true, loggedIn: true });
+      return res.json({ ok: true, loggedIn: true, role: session.role, username: session.username, label: session.label });
     }
     sessions.delete(token);
   }
-  res.json({ ok: true, loggedIn: false });
+  res.json({ ok: true, loggedIn: false, role: null });
 });
 
 // 登录页（未登录时重定向到这里）
@@ -532,8 +551,15 @@ app.get('/api/hooks', (req, res) => {
   }
 });
 
-// API: 触发 Hook
+// API: 触发 Hook（仅管理员可执行）
 app.post('/api/hooks/:id/execute', (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies[COOKIE_NAME];
+  const session = sessions.get(token);
+  if (!session || session.role !== 'admin') {
+    return res.status(403).json({ ok: false, error: '仅管理员可执行此操作', requireAdmin: true });
+  }
+
   const { id } = req.params;
   const hooks = loadHooks();
   const hook = hooks.find(h => h.id === id);
