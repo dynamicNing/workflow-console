@@ -373,6 +373,9 @@
         <div class="tab" :class="{active: tab === 'hooks'}" @click="tab = 'hooks'; loadHooks()">
           ⚡ Hooks <span class="count">{{ hooks.length }}</span>
         </div>
+        <div class="tab" :class="{active: tab === 'social'}" @click="tab = 'social'; loadSocialStatus()">
+          🐦 社交采集
+        </div>
       </div>
     </div>
 
@@ -665,6 +668,89 @@
         </div>
       </div>
 
+      <!-- ========== 🐦 社交采集 section ========== -->
+      <div class="section" v-if="tab === 'social'">
+        <div class="refresh-bar">
+          <div class="section-title" style="margin-bottom:0">🐦 社交媒体采集</div>
+          <button class="refresh-btn" @click="loadSocialStatus" :disabled="socialStatusLoading">
+            🔄 {{ socialStatusLoading ? '加载中...' : '刷新状态' }}
+          </button>
+        </div>
+
+        <!-- RSSHub 状态卡片 -->
+        <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;">
+          <div class="card" style="padding:0.875rem 1.25rem;min-width:140px;">
+            <div style="font-size:0.72rem;color:#666;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">RSSHub</div>
+            <div style="font-size:1.1rem;font-weight:700;">
+              {{ social.rsshubStatus === 'running' ? '✅ 运行中' : social.rsshubStatus === 'stopped' ? '❌ 已停止' : '❓ 未知' }}
+            </div>
+          </div>
+          <div class="card" style="padding:0.875rem 1.25rem;min-width:140px;">
+            <div style="font-size:0.72rem;color:#666;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">最近采集</div>
+            <div style="font-size:0.85rem;font-weight:600;margin-top:0.15rem;">{{ social.lastRun ? new Date(social.lastRun).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '从未采集' }}</div>
+          </div>
+        </div>
+
+        <!-- 平台快捷状态 -->
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+          <div v-for="(info, name) in social.platformLastItems" :key="name" class="card" style="padding:0.4rem 0.875rem;border-radius:20px;">
+            <span style="font-size:0.9rem;">{{ {'youtube':'▶️','weibo':'🐦','tech':'📰'}[name] || '📌' }}</span>
+            <span style="font-size:0.8rem;font-weight:600;margin-left:0.3rem;">{{ {'youtube':'YouTube','weibo':'微博','tech':'科技'}[name] || name }}</span>
+            <span style="font-size:0.72rem;color:#666;margin-left:0.4rem;">{{ info.date ? new Date(info.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '' }}</span>
+          </div>
+        </div>
+
+        <!-- 采集按钮 -->
+        <div class="card" style="padding:1.25rem;margin-bottom:1rem;">
+          <div style="margin-bottom:0.875rem;font-size:0.875rem;color:#888;">手动采集</div>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+            <button v-for="p in socialPlatforms" :key="p.id" class="btn btn-trigger" :disabled="socialCollecting !== null || social.rsshubStatus !== 'running'" @click="collectSocial(p.id)">
+              {{ socialCollecting === p.id ? '⏳ 采集中...' : p.emoji + ' ' + p.name }}
+            </button>
+            <button class="btn btn-trigger" :disabled="socialCollecting !== null || social.rsshubStatus !== 'running'" @click="collectSocial('all')" style="background:rgba(102,126,234,0.3);">
+              {{ socialCollecting === 'all' ? '⏳ 采集中...' : '🚀 采集全部' }}
+            </button>
+          </div>
+          <div v-if="socialCollectError" class="error-msg" style="margin-top:0.75rem;">{{ socialCollectError }}</div>
+          <div v-if="socialCollectResult" style="margin-top:0.75rem;font-size:0.82rem;color:#22c55e;">
+            ✅ {{ socialCollectResult }}
+          </div>
+        </div>
+
+        <!-- 平台过滤 -->
+        <div class="card" style="margin-bottom:0.75rem;">
+          <div style="padding:1rem 1.25rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+            <span style="font-size:0.8rem;color:#666;margin-right:0.25rem;">平台：</span>
+            <button v-for="t in socialTabs" :key="t.id" class="filter-btn" :class="{active: socialPlatform === t.id}" @click="socialPlatform = t.id; loadSocialItems()">{{ t.emoji }} {{ t.name }}</button>
+          </div>
+        </div>
+
+        <!-- 内容列表 -->
+        <div class="card">
+          <div v-if="socialItemsLoading" class="loading">加载中...</div>
+          <div v-else-if="!socialItems.length" style="padding:2rem;text-align:center;color:#555;">暂无内容，点击上方按钮开始采集</div>
+          <div v-else>
+            <div v-for="item in socialItems" :key="item.url + item.fetched_at" @click="item.url ? window.open(item.url, '_blank') : null" style="padding:0.875rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;" class="hook-item">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;">
+                <span :style="{fontWeight:'700',color:{'youtube':'#ff4444','weibo':'#ffa500','tech':'#3b82f6'}[item._platform]||'#888'}">
+                  {{ {'youtube':'▶️ YouTube','weibo':'🐦 微博','tech':'📰 科技'}[item._platform] || item._platform }}
+                </span>
+                <span style="font-size:0.72rem;color:#555;margin-left:auto;">{{ item.source }}</span>
+                <span style="font-size:0.72rem;color:#444;">{{ new Date(item.fetched_at).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) }}</span>
+              </div>
+              <div style="font-size:0.875rem;font-weight:600;line-height:1.4;">{{ item.title }}</div>
+              <div v-if="item.description" style="font-size:0.8rem;color:#555;margin-top:0.2rem;line-height:1.4;">{{ item.description.length > 80 ? item.description.slice(0,80) + '…' : item.description }}</div>
+            </div>
+            <!-- 分页 -->
+            <div v-if="socialTotalPages > 1" style="padding:0.875rem 1.25rem;display:flex;align-items:center;justify-content:center;gap:1rem;">
+              <button class="btn" style="padding:0.3rem 0.75rem;font-size:0.8rem;" :disabled="socialPage <= 1" @click="socialPage--; loadSocialItems()">← 上一页</button>
+              <span style="font-size:0.8rem;color:#666;">{{ socialPage }} / {{ socialTotalPages }}</span>
+              <button class="btn" style="padding:0.3rem 0.75rem;font-size:0.8rem;" :disabled="socialPage >= socialTotalPages" @click="socialPage++; loadSocialItems()">下一页 →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Toast -->
@@ -693,9 +779,84 @@
         const toast = ref(null);
         const currentUser = ref({ role: null, label: '', username: '' });
         const isAdmin = computed(() => currentUser.value.role === 'admin');
-        const currentUser = ref({ role: null, label: '', username: '' });
         const skillSearch = ref('');
         const skillFilter = ref('all');
+
+        // ===== 社交采集 =====
+        const social = ref({ rsshubStatus: 'unknown', lastRun: null, platformLastItems: {} });
+        const socialStatusLoading = ref(false);
+        const socialItems = ref([]);
+        const socialItemsLoading = ref(false);
+        const socialCollecting = ref(null);
+        const socialCollectError = ref('');
+        const socialCollectResult = ref('');
+        const socialPlatform = ref('all');
+        const socialPage = ref(1);
+        const socialTotalPages = ref(1);
+        const socialPlatforms = [
+          { id: 'youtube', name: 'YouTube', emoji: '▶️' },
+          { id: 'weibo', name: '微博', emoji: '🐦' },
+          { id: 'tech', name: '科技资讯', emoji: '📰' },
+        ];
+        const socialTabs = [
+          { id: 'all', name: '全部', emoji: '🌐' },
+          ...socialPlatforms,
+        ];
+
+        async function loadSocialStatus() {
+          socialStatusLoading.value = true;
+          try {
+            const res = await fetch('http://localhost:3000/api/social/status');
+            social.value = await res.json();
+          } catch (e) {
+            social.value = { rsshubStatus: 'error', lastRun: null, platformLastItems: {} };
+          } finally {
+            socialStatusLoading.value = false;
+          }
+        }
+
+        async function loadSocialItems() {
+          socialItemsLoading.value = true;
+          try {
+            const params = new URLSearchParams({ page: socialPage.value, pageSize: 20 });
+            if (socialPlatform.value !== 'all') params.set('platform', socialPlatform.value);
+            const res = await fetch('http://localhost:3000/api/social/items?' + params);
+            const data = await res.json();
+            socialItems.value = data.data || [];
+            socialTotalPages.value = data.totalPages || 1;
+          } catch (e) {
+            socialItems.value = [];
+          } finally {
+            socialItemsLoading.value = false;
+          }
+        }
+
+        async function collectSocial(platform) {
+          socialCollecting.value = platform;
+          socialCollectError.value = '';
+          socialCollectResult.value = '';
+          try {
+            const token = document.cookie.includes('token=') ? document.cookie.match(/token=([^;]+)/)?.[1] : '';
+            const res = await fetch('http://localhost:3000/api/social/collect', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
+              body: JSON.stringify({ platform }),
+            });
+            const data = await res.json();
+            const parts = [];
+            for (const [name, r] of Object.entries(data)) {
+              parts.push(`${name} ${r.saved || 0}条${r.error ? '(部分失败)' : ''}`);
+            }
+            socialCollectResult.value = parts.join(' · ');
+            await loadSocialStatus();
+            await loadSocialItems();
+          } catch (e) {
+            socialCollectError.value = '采集失败：' + e.message;
+          } finally {
+            socialCollecting.value = null;
+            setTimeout(() => { socialCollectResult.value = ''; }, 6000);
+          }
+        }
 
         let toastTimer = null;
 
@@ -1004,7 +1165,12 @@
           hookError, hookExecuting, hookRuns, selectedHookRunId,
           loadHooks, executeHook, quickExecute, viewHookRuns,
           orphanJobs, loadOrphanJobs, createHook,
-          currentUser, isAdmin, logout
+          currentUser, isAdmin, logout,
+          // 社交采集
+          social, socialStatusLoading, socialPlatforms, socialTabs, socialPlatform,
+          socialItems, socialItemsLoading, socialPage, socialTotalPages,
+          socialCollecting, socialCollectError, socialCollectResult,
+          loadSocialStatus, loadSocialItems, collectSocial
         };
       }
     }).mount('#app');
