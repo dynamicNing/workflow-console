@@ -677,6 +677,29 @@
           </button>
         </div>
 
+        <!-- 使用说明 -->
+        <div style="background:rgba(102,126,234,0.07);border:1px solid rgba(102,126,234,0.25);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem;">
+          <div style="font-size:0.875rem;font-weight:700;margin-bottom:0.5rem;color:#a78bfa;">📖 使用说明</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;">
+            <div>
+              <div style="font-size:0.75rem;font-weight:600;color:#888;margin-bottom:0.2rem;">RSSHub 状态</div>
+              <div style="font-size:0.8rem;color:#666;line-height:1.5;">显示 Docker 容器运行状态<br>❓ 未知 = 服务异常</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem;font-weight:600;color:#888;margin-bottom:0.2rem;">手动采集</div>
+              <div style="font-size:0.8rem;color:#666;line-height:1.5;">点击平台按钮单独采集<br>🚀 采集全部 = 三路同时跑</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem;font-weight:600;color:#888;margin-bottom:0.2rem;">内容存档</div>
+              <div style="font-size:0.8rem;color:#666;line-height:1.5;">抓取结果存入 JSONL 文件<br>路径：/root/content-archive/social/</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem;font-weight:600;color:#888;margin-bottom:0.2rem;">定时任务</div>
+              <div style="font-size:0.8rem;color:#666;line-height:1.5;">Hook「社交媒体聚合」已注册<br>可在 ⚡ Hooks tab 查看</div>
+            </div>
+          </div>
+        </div>
+
         <!-- RSSHub 状态卡片 -->
         <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;">
           <div class="card" style="padding:0.875rem 1.25rem;min-width:140px;">
