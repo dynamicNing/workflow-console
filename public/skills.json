@@ -42,6 +42,16 @@
       "path": "/root/.openclaw/workspace/skills/auto-updater"
     },
     {
+      "name": "autocli",
+      "slug": "autocli",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "|",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/autocli"
+    },
+    {
       "name": "bilibili-youtube-watcher",
       "slug": "bilibili-youtube-watcher",
       "version": "1.0.0",
@@ -402,6 +412,16 @@
       "path": "/root/.openclaw/workspace/skills/skillhub-preference"
     },
     {
+      "name": "social-media-collector",
+      "slug": "social-media-collector",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "社交媒体内容聚合与AI摘要。当需要聚合微博热搜、知乎热榜、公众号文章、小红书内容时触发，或定期推送社交媒体热点资讯。抓取方式：可访问的平台直接抓取，需登录的平台记录需求待扩展。输出：AI摘要 + 原文链接，飞书群推送 + 本地存档。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/social-media-collector"
+    },
+    {
       "name": "stock-market-pro",
       "slug": "stock-market-pro",
       "version": "1.2.12",
@@ -562,5 +582,5 @@
       "path": "/root/.openclaw/workspace/skills/youtube-watcher"
     }
   ],
-  "total": 56
+  "total": 58
 }
