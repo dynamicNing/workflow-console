@@ -630,7 +630,7 @@ app.post('/api/social/collect', (req, res) => {
 // ============================================================
 
 const HOOKS_FILE = path.join(__dirname, 'hooks.json');
-const HOOK_RUNS_DIR = '/www/workflow-console/hook-runs';
+const HOOK_RUNS_DIR = process.env.HOOK_RUNS_DIR || path.join(__dirname, 'hook-runs');
 if (!fs.existsSync(HOOK_RUNS_DIR)) fs.mkdirSync(HOOK_RUNS_DIR, { recursive: true });
 
 function loadHooks() {
