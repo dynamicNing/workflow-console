@@ -829,7 +829,7 @@
         async function loadSocialStatus() {
           socialStatusLoading.value = true;
           try {
-            const res = await fetch('http://localhost:3000/api/social/status');
+            const res = await fetch('/api/social/status');
             social.value = await res.json();
           } catch (e) {
             social.value = { rsshubStatus: 'error', lastRun: null, platformLastItems: {} };
@@ -843,7 +843,7 @@
           try {
             const params = new URLSearchParams({ page: socialPage.value, pageSize: 20 });
             if (socialPlatform.value !== 'all') params.set('platform', socialPlatform.value);
-            const res = await fetch('http://localhost:3000/api/social/items?' + params);
+            const res = await fetch('/api/social/items?' + params);
             const data = await res.json();
             socialItems.value = data.data || [];
             socialTotalPages.value = data.totalPages || 1;
@@ -859,10 +859,9 @@
           socialCollectError.value = '';
           socialCollectResult.value = '';
           try {
-            const token = document.cookie.includes('token=') ? document.cookie.match(/token=([^;]+)/)?.[1] : '';
-            const res = await fetch('http://localhost:3000/api/social/collect', {
+            const res = await fetch('/api/social/collect', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ platform }),
             });
             const data = await res.json();
@@ -919,7 +918,10 @@
           try {
             const res = await fetch('/api/skills');
             const data = await res.json();
-            if (data.ok) skills.value = data.skills;
+            if (data.ok) {
+              skills.value = data.skills;
+              skillsTotal.value = data.total || data.skills.length;
+            }
             else skillsError.value = data.error || '加载失败';
           } catch (e) { skillsError.value = e.message; }
           skillsLoading.value = false;
@@ -1134,7 +1136,7 @@
         }
 
         const contentTotal = computed(() => content.value.reduce((s, c) => s + c.files.length, 0));
-        const skillsTotal = computed(() => skills.value.length);
+        const skillsTotal = ref(0);
         const filteredSkills = computed(() => {
           let list = skills.value;
           if (skillFilter.value !== 'all') list = list.filter(s => s.category === skillFilter.value);

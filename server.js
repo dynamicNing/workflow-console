@@ -507,6 +507,125 @@ app.get('/api/image/list', (req, res) => {
 });
 
 // ============================================================
+// 社交采集系统
+// ============================================================
+
+const SOCIAL_ARCHIVE_DIR = '/root/content-archive/social';
+const COLLECTOR_SCRIPT = '/root/.openclaw/workspace/skills/social-media-collector/scripts/collector.py';
+
+// 读取某平台最新一条记录的时间
+function getSocialPlatformLastItem(platform) {
+  const file = path.join(SOCIAL_ARCHIVE_DIR, `${platform}.jsonl`);
+  if (!fs.existsSync(file)) return null;
+  try {
+    const lines = fs.readFileSync(file, 'utf-8').trim().split('\n').filter(Boolean);
+    if (!lines.length) return null;
+    const last = JSON.parse(lines[lines.length - 1]);
+    return { date: last.fetched_at || null };
+  } catch { return null; }
+}
+
+// API: 社交采集状态
+app.get('/api/social/status', (req, res) => {
+  try {
+    // 检查 RSSHub Docker 容器状态
+    let rsshubStatus = 'unknown';
+    try {
+      const out = execSync('docker inspect --format="{{.State.Status}}" rsshub 2>/dev/null', { encoding: 'utf-8', timeout: 5000 }).trim().replace(/"/g, '');
+      rsshubStatus = out === 'running' ? 'running' : 'stopped';
+    } catch { rsshubStatus = 'unknown'; }
+
+    // 各平台最新一条
+    const platforms = ['youtube', 'weibo', 'tech'];
+    const platformLastItems = {};
+    for (const p of platforms) {
+      const item = getSocialPlatformLastItem(p);
+      if (item) platformLastItems[p] = item;
+    }
+
+    // 最近一次采集时间（取所有平台中最新的）
+    const dates = Object.values(platformLastItems).map(i => i.date).filter(Boolean).sort();
+    const lastRun = dates.length ? new Date(dates[dates.length - 1]).getTime() : null;
+
+    res.json({ rsshubStatus, lastRun, platformLastItems });
+  } catch (e) {
+    res.json({ rsshubStatus: 'unknown', lastRun: null, platformLastItems: {} });
+  }
+});
+
+// API: 社交内容列表（分页）
+app.get('/api/social/items', (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 20;
+  const platform = req.query.platform || 'all';
+
+  try {
+    if (!fs.existsSync(SOCIAL_ARCHIVE_DIR)) return res.json({ data: [], totalPages: 0 });
+
+    const platforms = platform === 'all' ? ['youtube', 'weibo', 'tech'] : [platform];
+    const allItems = [];
+
+    for (const p of platforms) {
+      const file = path.join(SOCIAL_ARCHIVE_DIR, `${p}.jsonl`);
+      if (!fs.existsSync(file)) continue;
+      const lines = fs.readFileSync(file, 'utf-8').trim().split('\n').filter(Boolean);
+      for (const line of lines) {
+        try {
+          const item = JSON.parse(line);
+          item._platform = p;
+          allItems.push(item);
+        } catch {}
+      }
+    }
+
+    // 按时间倒序
+    allItems.sort((a, b) => new Date(b.fetched_at || 0) - new Date(a.fetched_at || 0));
+
+    const total = allItems.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const data = allItems.slice((page - 1) * pageSize, page * pageSize);
+
+    res.json({ data, total, totalPages, page });
+  } catch (e) {
+    res.json({ data: [], total: 0, totalPages: 0, error: e.message });
+  }
+});
+
+// API: 触发采集（仅管理员）
+app.post('/api/social/collect', (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies[COOKIE_NAME];
+  const session = sessions.get(token);
+  if (!session || session.role !== 'admin') {
+    return res.status(403).json({ ok: false, error: '仅管理员可执行' });
+  }
+
+  const { platform } = req.body || {};
+  const targets = platform === 'all' ? ['weibo', 'youtube', 'tech'] : [platform];
+
+  const results = {};
+  const promises = targets.map(p => new Promise(resolve => {
+    const { exec } = require('child_process');
+    exec(
+      `python3 "${COLLECTOR_SCRIPT}" ${p}`,
+      { cwd: path.dirname(COLLECTOR_SCRIPT), timeout: 60000, encoding: 'utf-8' },
+      (error, stdout) => {
+        if (error) {
+          results[p] = { saved: 0, error: error.message.slice(0, 200) };
+        } else {
+          // 尝试从 stdout 解析保存条数
+          const match = stdout.match(/saved[:\s]+(\d+)/i);
+          results[p] = { saved: match ? parseInt(match[1]) : 0, error: null };
+        }
+        resolve();
+      }
+    );
+  }));
+
+  Promise.all(promises).then(() => res.json(results));
+});
+
+// ============================================================
 // HOOKS 系统
 // ============================================================
 
@@ -644,10 +763,13 @@ app.post('/api/hooks/:id/execute', (req, res) => {
   // 立即返回，不阻塞
   res.json({ ok: true, runId, message: `Hook '${hook.name}' 已触发，运行中...` });
 
+  // script 字段可能是文件路径（/path/to/script.sh）或 shell 命令（openclaw cron trigger ...）
+  const shellCmd = hook.script.startsWith('/') ? `bash "${hook.script}"` : hook.script;
+
   // 异步执行
   const { exec } = require('child_process');
   const child = exec(
-    `bash "${hook.script}" > "${logFile}" 2>&1; echo "EXIT:$?"`,
+    `${shellCmd} > "${logFile}" 2>&1; echo "EXIT:$?"`,
     { cwd: hook.workingDir || '/tmp', timeout: hook.timeout * 1000 },
     (error, stdout, stderr) => {
       const exitCode = stdout.includes('EXIT:') ? parseInt(stdout.split('EXIT:')[1]) : 1;
