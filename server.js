@@ -699,9 +699,9 @@ app.post('/api/ljg/chat', async (req, res) => {
   ];
 
   try {
-    // 直接调用 Anthropic API
+    // 调用 fusecode.cc (Claude Code 后端)
     const axios = require('axios');
-    const response = await axios.post('https://api.anthropic.com/v1/messages', {
+    const response = await axios.post('https://www.fusecode.cc/v1/messages', {
       model: 'claude-opus-4-6',
       messages: messages.filter(m => m.role !== 'system'),
       system: messages.find(m => m.role === 'system')?.content,
@@ -710,7 +710,7 @@ app.post('/api/ljg/chat', async (req, res) => {
       timeout: 60000,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY || '',
+        'x-api-key': 'sk-f7cc027928ef0a2bd0b8d24bf882d138390f55220a1cd5a43e8d9d7d862a1eb7',
         'anthropic-version': '2023-06-01'
       }
     });
