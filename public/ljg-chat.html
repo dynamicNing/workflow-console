@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LJ-G 工作台</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0f0f0f;
+      --sidebar: #1a1a1a;
+      --card: #222;
+      --border: #333;
+      --text: #e0e0e0;
+      --muted: #888;
+      --accent: #6366f1;
+      --accent2: #22d3ee;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; }
+    .layout { display: flex; height: 100vh; }
+
+    /* Sidebar */
+    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-header h1 { font-size: 16px; font-weight: 600; color: var(--accent2); }
+    .sidebar-header p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .skills-section { padding: 12px; flex: 1; overflow-y: auto; }
+    .skills-section h3 { font-size: 10px; text-transform: uppercase; color: var(--muted); letter-spacing: 1px; margin-bottom: 8px; }
+
+    .skill-btn { width: 100%; text-align: left; padding: 8px 10px; margin-bottom: 4px; background: transparent; border: 1px solid transparent; border-radius: 8px; color: var(--text); cursor: pointer; font-size: 13px; transition: all 0.15s; }
+    .skill-btn:hover { background: var(--card); border-color: var(--border); }
+    .skill-btn.active { background: var(--card); border-color: var(--accent); color: var(--accent2); }
+    .skill-btn .skill-icon { margin-right: 8px; }
+    .skill-btn.auto-mode { border-left: 3px solid var(--green); }
+
+    .sidebar-footer { padding: 12px; border-top: 1px solid var(--border); }
+    .history-btn { width: 100%; padding: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); cursor: pointer; font-size: 12px; }
+    .history-btn:hover { border-color: var(--accent); color: var(--text); }
+
+    /* Main */
+    .main { flex: 1; display: flex; flex-direction: column; }
+
+    /* Header */
+    .header { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .header-title { font-size: 14px; font-weight: 500; }
+    .header-skill { font-size: 11px; color: var(--accent2); background: rgba(99,102,241,0.15); padding: 3px 8px; border-radius: 4px; }
+    .header-skill.auto { background: rgba(34,197,94,0.15); color: var(--green); }
+
+    /* Chat */
+    .chat-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .msg { max-width: 720px; width: 100%; margin: 0 auto; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .msg-user { display: flex; gap: 10px; align-items: flex-start; }
+    .msg-assistant { display: flex; gap: 10px; align-items: flex-start; }
+    .avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .avatar.user { background: var(--accent); color: white; }
+    .avatar.assistant { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; }
+    .bubble { flex: 1; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.6; }
+    .msg-user .bubble { background: var(--card); border: 1px solid var(--border); }
+    .msg-assistant .bubble { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); }
+    .bubble pre { background: #111; padding: 12px; border-radius: 8px; overflow-x: auto; margin-top: 8px; font-size: 12px; }
+    .bubble code { background: #111; padding: 2px 6px; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 12px; }
+    .bubble p { margin: 8px 0; }
+    .bubble ul, .bubble ol { margin: 8px 0; padding-left: 20px; }
+    .bubble li { margin: 4px 0; }
+    .bubble table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+    .bubble th, .bubble td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; font-size: 13px; }
+    .bubble th { background: var(--card); }
+
+    .msg-time { font-size: 10px; color: var(--muted); margin-top: 4px; padding-left: 42px; }
+
+    /* Typing */
+    .typing { display: flex; gap: 10px; align-items: flex-start; max-width: 720px; width: 100%; margin: 0 auto; }
+    .typing .bubble { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); }
+    .typing-dots { display: flex; gap: 4px; padding: 16px; }
+    .typing-dots span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: bounce 1.4s infinite; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+
+    /* Input */
+    .input-area { padding: 16px 20px; border-top: 1px solid var(--border); }
+    .input-wrapper { max-width: 720px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-end; }
+    .input-box { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; }
+    .input-box:focus-within { border-color: var(--accent); }
+    textarea { width: 100%; background: transparent; border: none; outline: none; color: var(--text); font-size: 14px; resize: none; line-height: 1.5; max-height: 200px; }
+    textarea::placeholder { color: var(--muted); }
+    .input-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .action-btn { padding: 4px 10px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); cursor: pointer; font-size: 11px; }
+    .action-btn:hover { border-color: var(--accent); color: var(--text); }
+    .action-btn.active { background: rgba(99,102,241,0.15); border-color: var(--accent); color: var(--accent2); }
+    .send-btn { padding: 10px 20px; background: var(--accent); border: none; border-radius: 10px; color: white; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity 0.15s; }
+    .send-btn:hover { opacity: 0.85; }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* History Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: var(--sidebar); border: 1px solid var(--border); border-radius: 16px; width: 90%; max-width: 800px; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; }
+    .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h2 { font-size: 15px; }
+    .modal-close { background: transparent; border: none; color: var(--muted); cursor: pointer; font-size: 20px; }
+    .modal-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+    .history-item { padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s; }
+    .history-item:hover { border-color: var(--accent); }
+    .history-item h4 { font-size: 13px; margin-bottom: 4px; }
+    .history-item p { font-size: 11px; color: var(--muted); }
+    .history-skill { display: inline-block; font-size: 10px; padding: 2px 6px; background: rgba(99,102,241,0.15); color: var(--accent2); border-radius: 4px; margin-right: 6px; }
+
+    /* Auto recommend highlight */
+    .auto-recommend-banner { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 16px; max-width: 720px; margin-left: auto; margin-right: auto; font-size: 12px; color: var(--green); display: none; }
+    .auto-recommend-banner.show { display: block; }
+    .auto-recommend-banner strong { color: var(--green); }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h1>🤖 LJ-G 工作台</h1>
+      <p>AI 技能对话 · 本地存储</p>
+    </div>
+    <div class="skills-section">
+      <h3>选择技能</h3>
+      <button class="skill-btn auto-mode" data-skill="auto">
+        <span class="skill-icon">✨</span>智能推荐
+      </button>
+      <div style="height:12px"></div>
+      <h3>写作工具</h3>
+      <button class="skill-btn" data-skill="ljg-writes">
+        <span class="skill-icon">✍️</span>ljg-writes
+      </button>
+      <button class="skill-btn" data-skill="ljg-word">
+        <span class="skill-icon">📝</span>ljg-word
+      </button>
+      <button class="skill-btn" data-skill="ljg-word-flow">
+        <span class="skill-icon">🔄</span>ljg-word-flow
+      </button>
+      <button class="skill-btn" data-skill="ljg-plain">
+        <span class="skill-icon">📄</span>ljg-plain
+      </button>
+      <div style="height:12px"></div>
+      <h3>投研分析</h3>
+      <button class="skill-btn" data-skill="ljg-invest">
+        <span class="skill-icon">📊</span>ljg-invest
+      </button>
+      <button class="skill-btn" data-skill="ljg-rank">
+        <span class="skill-icon">🏆</span>ljg-rank
+      </button>
+      <div style="height:12px"></div>
+      <h3>学术论文</h3>
+      <button class="skill-btn" data-skill="ljg-paper">
+        <span class="skill-icon">📚</span>ljg-paper
+      </button>
+      <button class="skill-btn" data-skill="ljg-paper-flow">
+        <span class="skill-icon">🔍</span>ljg-paper-flow
+      </button>
+      <div style="height:12px"></div>
+      <h3>卡片与知识</h3>
+      <button class="skill-btn" data-skill="ljg-card">
+        <span class="skill-icon">🗃️</span>ljg-card
+      </button>
+      <button class="skill-btn" data-skill="ljg-skill-map">
+        <span class="skill-icon">🗺️</span>ljg-skill-map
+      </button>
+      <button class="skill-btn" data-skill="ljg-roundtable">
+        <span class="skill-icon">🎭</span>ljg-roundtable
+      </button>
+      <div style="height:12px"></div>
+      <h3>其他工具</h3>
+      <button class="skill-btn" data-skill="ljg-learn">
+        <span class="skill-icon">🎓</span>ljg-learn
+      </button>
+      <button class="skill-btn" data-skill="ljg-x-download">
+        <span class="skill-icon">⬇️</span>ljg-x-download
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <button class="history-btn" id="historyBtn">📜 历史记录</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="header">
+      <span class="header-title">LJ-G 对话</span>
+      <span class="header-skill" id="currentSkill">智能推荐模式</span>
+    </div>
+
+    <div class="auto-recommend-banner" id="autoBanner">
+      <strong>✨ 智能推荐：</strong><span id="autoRecommendText"></span>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+      <div class="msg msg-assistant">
+        <div class="avatar assistant">🤖</div>
+        <div class="bubble">
+          <p>👋 欢迎使用 <strong>LJ-G 工作台</strong>！</p>
+          <p>请从左侧选择一个技能，或开启<strong>✨智能推荐</strong>让我自动判断你的需求。</p>
+          <p>所有对话将自动保存为 MD 文件。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrapper">
+        <div class="input-box">
+          <textarea id="msgInput" rows="1" placeholder="输入你的问题..."></textarea>
+          <div class="input-actions">
+            <button class="action-btn" id="saveBtn">💾 保存</button>
+          </div>
+        </div>
+        <button class="send-btn" id="sendBtn">发送</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- History Modal -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📜 对话历史</h2>
+      <button class="modal-close" id="modalClose">×</button>
+    </div>
+    <div class="modal-body" id="historyList"></div>
+  </div>
+</div>
+
+<script>
+// State
+let currentSkill = 'auto';
+let conversation = [];
+let conversationId = Date.now();
+let isLoading = false;
+
+// Skills metadata
+const skillMeta = {
+  'auto': { name: '智能推荐', icon: '✨' },
+  'ljg-writes': { name: 'ljg-writes', icon: '✍️' },
+  'ljg-word': { name: 'ljg-word', icon: '📝' },
+  'ljg-word-flow': { name: 'ljg-word-flow', icon: '🔄' },
+  'ljg-plain': { name: 'ljg-plain', icon: '📄' },
+  'ljg-invest': { name: 'ljg-invest', icon: '📊' },
+  'ljg-rank': { name: 'ljg-rank', icon: '🏆' },
+  'ljg-paper': { name: 'ljg-paper', icon: '📚' },
+  'ljg-paper-flow': { name: 'ljg-paper-flow', icon: '🔍' },
+  'ljg-card': { name: 'ljg-card', icon: '🗃️' },
+  'ljg-skill-map': { name: 'ljg-skill-map', icon: '🗺️' },
+  'ljg-roundtable': { name: 'ljg-roundtable', icon: '🎭' },
+  'ljg-learn': { name: 'ljg-learn', icon: '🎓' },
+  'ljg-x-download': { name: 'ljg-x-download', icon: '⬇️' },
+};
+
+// Auto-recommend logic
+const skillKeywords = {
+  'ljg-writes': ['写', '文章', '创作', '文案', '脚本', '写作', '生成文章'],
+  'ljg-word': ['词', '词语', '词汇', 'word', '同义词', '反义词'],
+  'ljg-word-flow': ['词流', '词汇流', '词语接龙', 'word flow'],
+  'ljg-plain': ['plain', '简洁', '纯文本', '原文'],
+  'ljg-invest': ['投资', '股票', '分析', '投研', '研报', '估值'],
+  'ljg-rank': ['排名', '排行', 'rank', 'TOP', '榜单'],
+  'ljg-paper': ['论文', 'paper', '学术', '文献', '研究'],
+  'ljg-paper-flow': ['论文流', 'paper flow', '文献流'],
+  'ljg-card': ['卡片', 'card', '闪卡', '知识卡片'],
+  'ljg-skill-map': ['技能图', 'skill map', '技能地图', '能力图'],
+  'ljg-roundtable': ['圆桌', '辩论', 'roundtable', '讨论', '辩论'],
+  'ljg-learn': ['学习', 'learn', '教程', '知识点'],
+  'ljg-x-download': ['下载', 'x.com', 'twitter', '推文下载', '下载推特'],
+};
+
+function autoRecommend(text) {
+  text = text.toLowerCase();
+  let best = null, bestScore = 0;
+  for (const [skill, keywords] of Object.entries(skillKeywords)) {
+    if (skill === 'auto') continue;
+    for (const kw of keywords) {
+      if (text.includes(kw.toLowerCase())) {
+        const score = kw.length;
+        if (score > bestScore) { bestScore = score; best = skill; }
+      }
+    }
+  }
+  return best;
+}
+
+function selectSkill(skill, btn) {
+  currentSkill = skill;
+  document.querySelectorAll('.skill-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  else document.querySelector(`[data-skill="${skill}"]`)?.classList.add('active');
+
+  const meta = skillMeta[skill] || { name: skill, icon: '🤖' };
+  const headerSkill = document.getElementById('currentSkill');
+  headerSkill.textContent = `${meta.icon} ${meta.name}`;
+  headerSkill.className = 'header-skill' + (skill === 'auto' ? ' auto' : '');
+}
+
+function handleKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+}
+
+function formatTime(ts) {
+  return new Date(ts).toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function scrollToBottom() {
+  const area = document.getElementById('chatArea');
+  area.scrollTop = area.scrollHeight;
+}
+
+function addMessage(role, content, time) {
+  const area = document.getElementById('chatArea');
+  const msg = document.createElement('div');
+  msg.className = `msg msg-${role}`;
+  const icon = role === 'user' ? '👤' : '🤖';
+  const avatarClass = role === 'user' ? 'user' : 'assistant';
+  const timeStr = time || formatTime(Date.now());
+
+  // Parse markdown-like content
+  const html = parseContent(content);
+
+  msg.innerHTML = `
+    <div class="avatar ${avatarClass}">${icon}</div>
+    <div>
+      <div class="bubble">${html}</div>
+      <div class="msg-time">${timeStr}</div>
+    </div>
+  `;
+  area.appendChild(msg);
+  scrollToBottom();
+}
+
+function parseContent(text) {
+  if (!text) return '';
+  // Escape HTML
+  text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // Code blocks
+  text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+  // Inline code
+  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Bold
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // Tables (simple)
+  const lines = text.split('\n');
+  let inTable = false;
+  let tableHtml = '<table>';
+  const newLines = [];
+  for (const line of lines) {
+    if (line.includes('|') && line.trim().startsWith('|')) {
+      if (!inTable) { inTable = true; tableHtml = '<table>'; }
+      const cells = line.split('|').filter(c => c.trim() && !c.trim().match(/^[-:]+$/));
+      if (cells.length > 0 && !line.match(/^\|[-:\s]+\|$/)) {
+        tableHtml += `<tr>${cells.map(c => `<td>${c.trim()}</td>`).join('')}</tr>`;
+      } else if (line.match(/^\|[-:\s]+\|$/)) {
+        // separator row, skip
+      }
+    } else {
+      if (inTable) { tableHtml += '</table>'; newLines.push(tableHtml); tableHtml = '<table>'; inTable = false; }
+      newLines.push(line);
+    }
+  }
+  if (inTable) tableHtml += '</table>';
+  text = newLines.join('\n');
+  if (inTable) text += '\n' + tableHtml;
+
+  // Paragraphs
+  text = text.split(/\n\n+/).map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+  return text;
+}
+
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const typing = document.createElement('div');
+  typing.className = 'typing';
+  typing.id = 'typingIndicator';
+  typing.innerHTML = `
+    <div class="avatar assistant">🤖</div>
+    <div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>
+  `;
+  area.appendChild(typing);
+  scrollToBottom();
+}
+
+function hideTyping() {
+  document.getElementById('typingIndicator')?.remove();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  // Add user message
+  addMessage('user', text);
+  conversation.push({ role: 'user', content: text, time: Date.now() });
+  input.value = '';
+  input.style.height = 'auto';
+
+  // Auto recommend check
+  if (currentSkill === 'auto') {
+    const recommended = autoRecommend(text);
+    if (recommended) {
+      const banner = document.getElementById('autoBanner');
+      const recText = document.getElementById('autoRecommendText');
+      recText.textContent = `检测到需求: ${skillMeta[recommended]?.icon || '🤖'} ${skillMeta[recommended]?.name || recommended}`;
+      banner.classList.add('show');
+      // Auto switch to recommended skill
+      selectSkill(recommended, null);
+    }
+  }
+
+  showTyping();
+
+  try {
+    // Call OpenClaw API to route to skill
+    const response = await fetch('/api/ljg/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, skill: currentSkill, conversation })
+    });
+
+    if (!response.ok) throw new Error('API error');
+
+    const data = await response.json();
+    hideTyping();
+
+    const reply = data.reply || '抱歉，暂时无法处理。';
+    addMessage('assistant', reply);
+    conversation.push({ role: 'assistant', content: reply, time: Date.now() });
+
+    // Auto-save every 5 messages
+    if (conversation.filter(m => m.role === 'user').length % 5 === 0) {
+      autoSave();
+    }
+  } catch (err) {
+    hideTyping();
+    addMessage('assistant', '⚠️ 连接失败，请检查服务状态。');
+    console.error(err);
+  } finally {
+    isLoading = false;
+    document.getElementById('sendBtn').disabled = false;
+  }
+}
+
+function autoSave() {
+  const conv = conversation.filter(m => m.role === 'user' || m.role === 'assistant');
+  if (conv.length === 0) return;
+  saveToLocal(conv);
+}
+
+function saveToLocal(conv) {
+  const skill = currentSkill === 'auto' ? 'auto' : currentSkill;
+  const key = `ljg-${skill}-${conversationId}`;
+  const meta = skillMeta[skill] || { name: skill, icon: '🤖' };
+
+  const firstUserMsg = conv.find(m => m.role === 'user');
+  const title = firstUserMsg ? firstUserMsg.content.substring(0, 50) : `${meta.name} 对话`;
+
+  const record = {
+    id: conversationId,
+    skill,
+    skillName: meta.name,
+    title,
+    messages: conv,
+    createdAt: conversationId,
+    updatedAt: Date.now()
+  };
+
+  // Save to conversations list
+  const listKey = 'ljg-conversations';
+  const list = JSON.parse(localStorage.getItem(listKey) || '[]');
+  const existing = list.findIndex(c => c.id === conversationId);
+  if (existing >= 0) list[existing] = record;
+  else list.unshift(record);
+  localStorage.setItem(listKey, JSON.stringify(list));
+
+  return record;
+}
+
+function saveConversation() {
+  const conv = conversation.filter(m => m.role === 'user' || m.role === 'assistant');
+  if (conv.length === 0) { alert('没有对话可保存'); return; }
+  const record = saveToLocal(conv);
+
+  // Generate MD content
+  const meta = skillMeta[currentSkill] || { name: currentSkill, icon: '🤖' };
+  let md = `---\ntitle: ${record.title}\nskill: ${meta.name}\ncreated: ${new Date(record.createdAt).toISOString()}\n---\n\n`;
+  md += `# ${meta.icon} ${meta.name} 对话\n\n`;
+  for (const msg of conv) {
+    const role = msg.role === 'user' ? '👤 用户' : '🤖 AI';
+    md += `## ${role}\n\n${msg.content}\n\n---\n\n`;
+  }
+
+  // Download as MD
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ljg-${currentSkill}-${conversationId}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  alert('✅ 对话已保存为 MD 文件');
+}
+
+function showHistory() {
+  const listKey = 'ljg-conversations';
+  const list = JSON.parse(localStorage.getItem(listKey) || '[]');
+  const container = document.getElementById('historyList');
+
+  if (list.length === 0) {
+    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px">暂无历史记录</p>';
+  } else {
+    container.innerHTML = list.map(c => `
+      <div class="history-item" data-conv-id="${c.id}">
+        <h4>${c.title || '无标题'}</h4>
+        <p>
+          <span class="history-skill">${skillMeta[c.skill]?.icon || '🤖'} ${skillMeta[c.skill]?.name || c.skill}</span>
+          ${new Date(c.updatedAt).toLocaleString('zh-CN')}
+        </p>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('historyModal').classList.add('show');
+}
+
+function closeHistory() {
+  document.getElementById('historyModal').classList.remove('show');
+}
+
+function loadConversation(id) {
+  const listKey = 'ljg-conversations';
+  const list = JSON.parse(localStorage.getItem(listKey) || '[]');
+  const conv = list.find(c => c.id === id);
+  if (!conv) return;
+
+  conversationId = id;
+  conversation = [...conv.messages];
+  selectSkill(conv.skill, null);
+
+  // Render messages
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '';
+  for (const msg of conv.messages) {
+    addMessage(msg.role, msg.content, formatTime(msg.time));
+  }
+
+  closeHistory();
+}
+
+// Init
+// Bind all events after DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  const msgInput = document.getElementById('msgInput');
+
+  // Skill buttons
+  document.querySelectorAll('.skill-btn[data-skill]').forEach(btn => {
+    btn.addEventListener('click', () => selectSkill(btn.dataset.skill, btn));
+  });
+
+  // History button
+  document.getElementById('historyBtn').addEventListener('click', showHistory);
+
+  // Modal close
+  document.getElementById('modalClose').addEventListener('click', closeHistory);
+
+  // Send button
+  document.getElementById('sendBtn').addEventListener('click', sendMessage);
+
+  // Save button
+  document.getElementById('saveBtn').addEventListener('click', saveConversation);
+
+  // Input events
+  msgInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+  msgInput.addEventListener('input', () => {
+    msgInput.style.height = 'auto';
+    msgInput.style.height = Math.min(msgInput.scrollHeight, 200) + 'px';
+  });
+
+  // History items (delegated)
+  document.getElementById('historyList').addEventListener('click', e => {
+    const item = e.target.closest('.history-item');
+    if (item) loadConversation(parseInt(item.dataset.convId));
+  });
+
+  // Init
+  selectSkill('auto', document.querySelector('[data-skill="auto"]'));
+});
+</script>
+</body>
+</html>
