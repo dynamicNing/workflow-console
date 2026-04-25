@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>期权学苑 | Options Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e13;--bg2:#111820;--card:#161f2a;--cardh:#1c2736;--bd:#2a3545;--bdb:#3d4f66;--txt:#e8ecf0;--txt2:#8899aa;--txtm:#556677;--gold:#e8a020;--goldd:#a06b12;--grn:#22c55e;--grnbg:rgba(34,197,94,.08);--red:#ef4444;--redbg:rgba(239,68,68,.08);--blu:#3b82f6;--blubg:rgba(59,130,246,.08);--pur:#a855f7;--mono:'IBM Plex Mono',monospace;--serif:'Noto Serif SC',serif;--sans:'Inter',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh}
+.header{background:var(--bg2);border-bottom:1px solid var(--bd);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hl{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold);letter-spacing:2px}
+.hl span{color:var(--txt2);font-weight:400;font-size:13px;margin-left:8px}
+.hn{display:flex;gap:4px}
+.nt{padding:8px 18px;border-radius:8px;border:none;background:transparent;color:var(--txt2);font-size:14px;cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.nt:hover{background:var(--card);color:var(--txt)}
+.nt.on{background:var(--card);color:var(--gold);border:1px solid var(--bd)}
+.hb{font-size:11px;background:var(--goldd);color:var(--gold);padding:3px 10px;border-radius:20px;font-family:var(--mono)}
+.ticker-wrap{background:var(--bg2);border-bottom:1px solid var(--bd);overflow:hidden;height:34px;display:flex;align-items:center}
+.ticker{display:flex;gap:36px;animation:ticker 40s linear infinite;white-space:nowrap;padding-left:32px}
+.ti{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px}
+.tn{color:var(--txtm)}.tp{color:var(--txt);font-weight:500}.tu{color:var(--grn)}.td{color:var(--red)}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.container{max-width:1400px;margin:0 auto;padding:24px 32px}
+.st{font-family:var(--serif);font-size:20px;color:var(--txt);margin-bottom:4px}
+.ss{font-size:13px;color:var(--txtm);margin-bottom:24px}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:8px;margin-bottom:16px;overflow:hidden}
+.ph{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.pt{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--txtm);font-family:var(--mono)}
+.pb{padding:16px}
+.tg{display:grid;grid-template-columns:320px 1fr 280px;gap:16px;align-items:start}
+@media(max-width:1100px){.tg{grid-template-columns:1fr}}
+.fl{font-size:10px;color:var(--txtm);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+input,select{width:100%;background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:8px 10px;color:var(--txt);font-size:13px;font-family:var(--sans);outline:none;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--gold)}
+select option{background:var(--card)}
+.pr{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.br{display:flex;gap:6px;margin-top:4px}
+.b{flex:1;padding:9px;border-radius:6px;border:1px solid var(--bd);font-size:12px;font-family:var(--sans);font-weight:500;cursor:pointer;transition:all .2s}
+.bc{background:var(--grnbg);color:var(--grn);border-color:rgba(34,197,94,.3)}
+.bc:hover{background:rgba(34,197,94,.15)}
+.bp{background:var(--redbg);color:var(--red);border-color:rgba(239,68,68,.3)}
+.bp:hover{background:rgba(239,68,68,.15)}
+.bs{background:var(--bg2);color:var(--txt2)}
+.bs:hover{border-color:var(--txt2);color:var(--txt)}
+.bcl{background:var(--bg2);color:var(--txtm);flex:.5;font-size:11px}
+.bcl:hover{color:var(--red);border-color:var(--red)}
+.plist{display:flex;flex-direction:column;gap:6px;margin-top:12px;max-height:220px;overflow-y:auto}
+.pi{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border-radius:6px;border-left:3px solid;font-size:12px}
+.pi.cb{border-left-color:var(--grn)}.pi.pb{border-left-color:var(--red)}
+.pi.cs{border-left-color:var(--grn);opacity:.5}.pi.ps{border-left-color:var(--red);opacity:.5}
+.pin{display:flex;flex-direction:column;gap:1px}
+.ptp{font-family:var(--mono);font-size:10px;color:var(--txtm)}
+.pde{color:var(--txt2);font-family:var(--mono);font-size:11px}
+.ppn{font-family:var(--mono);font-size:12px;font-weight:600}
+.ppn.g{color:var(--grn)}.ppn.l{color:var(--red)}
+.pdel{background:none;border:none;color:var(--txtm);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px}
+.pdel:hover{color:var(--red);background:var(--redbg)}
+input[type=range]{width:100%;-webkit-appearance:none;height:4px;background:var(--bd);border-radius:2px;outline:none;margin:10px 0 6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer}
+.slwrap{margin:8px 0}
+.cls{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--txtm);margin-top:4px}
+.mpd{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.mpl{font-size:10px;color:var(--txtm);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px}
+.mpv{font-family:var(--mono);font-size:26px;font-weight:600;color:var(--txt)}
+.mpuc{font-size:10px;color:var(--txtm);margin-top:2px;font-family:var(--mono)}
+#pcWrap{position:relative;height:200px;margin:12px 0 6px}
+#pc{display:block;width:100%;height:100%}
+.gg{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:12px}
+.gi{background:var(--bg2);border-radius:6px;padding:10px 8px;text-align:center}
+.gn{font-family:var(--mono);font-size:10px;color:var(--txtm);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.gv{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--gold)}
+.gd{font-size:9px;color:var(--txtm);margin-top:2px}
+.ps2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.pc2{background:var(--bg2);border-radius:6px;padding:12px;text-align:center}
+.pcl{font-size:10px;color:var(--txtm);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.pcv{font-family:var(--mono);font-size:18px;font-weight:600}
+.pcv.g{color:var(--grn)}.pcv.l{color:var(--red)}.pcv.n{color:var(--txt2)}
+.oct{width:100%;border-collapse:collapse;font-size:11px;font-family:var(--mono)}
+.oct th{padding:7px 8px;font-size:9px;color:var(--txtm);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--bd);text-align:center}
+.oct td{padding:6px 8px;text-align:center;border-bottom:1px solid rgba(42,53,69,.4)}
+.oct tr:hover td{background:var(--bg2)}
+.atmr td{background:rgba(232,160,32,.06)}
+.cop{color:var(--grn);cursor:pointer}.cop:hover{text-decoration:underline}
+.pup{color:var(--red);cursor:pointer}.pup:hover{text-decoration:underline}
+.sp{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
+.sb{padding:10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg2);color:var(--txt2);font-size:11px;cursor:pointer;transition:all .2s;text-align:left;font-family:var(--sans)}
+.sb:hover{border-color:var(--gold);color:var(--gold);background:var(--cardh)}
+.sbn{font-weight:600;margin-bottom:1px;font-size:12px}
+.sbd{color:var(--txtm);font-size:9px}
+.lg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.lc{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;opacity:0;animation:fa .4s ease forwards}
+.lc:hover{border-color:var(--gold);background:var(--cardh);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.lc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);opacity:0;transition:opacity .2s}
+.lc:hover::before{opacity:1}
+.ln{font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px}
+.lt{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--txt);margin-bottom:8px}
+.ld{font-size:12px;color:var(--txt2);line-height:1.6;margin-bottom:10px}
+.tag{display:inline-block;margin-right:5px;margin-top:4px;font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blubg);color:var(--blu);font-family:var(--mono)}
+.tag.adv{background:rgba(168,85,247,.1);color:var(--pur)}
+.tag.str{background:var(--grnbg);color:var(--grn)}
+.tag.grk{background:rgba(232,160,32,.1);color:var(--gold)}
+@keyframes fa{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:24px}
+.mo.on{display:flex}
+.m{background:var(--card);border:1px solid var(--bdb);border-radius:12px;width:100%;max-width:780px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column}
+.mh{padding:18px 28px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.mh h2{font-family:var(--serif);font-size:20px;color:var(--gold)}
+.mx{background:var(--bg2);border:1px solid var(--bd);color:var(--txt2);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:18px;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.mx:hover{color:var(--red);border-color:var(--red)}
+.mb{padding:28px;overflow-y:auto;flex:1}
+.mn{padding:14px 28px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.mnb{padding:7px 16px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--txt2);font-size:12px;cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.mnb:hover{border-color:var(--gold);color:var(--gold)}
+.mnb.p{background:var(--gold);color:#000;border-color:var(--gold);font-weight:600}
+.mnb.p:hover{background:#f0b030}
+.mb h3{font-family:var(--serif);font-size:16px;color:var(--gold);margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.mb h3:first-child{margin-top:0}
+.mb p{font-size:14px;line-height:1.85;color:var(--txt2);margin-bottom:12px}
+.mb strong{color:var(--txt)}
+.mb .fm{background:var(--bg2);border:1px solid var(--bd);border-left:3px solid var(--gold);border-radius:4px;padding:12px 16px;font-family:var(--mono);font-size:13px;color:var(--txt);margin:12px 0;line-height:1.6}
+.mb table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+.mb th{background:var(--bg2);color:var(--gold);padding:9px 14px;text-align:left;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--bd)}
+.mb td{padding:9px 14px;color:var(--txt2);border-bottom:1px solid var(--bd)}
+.mb tr:hover td{background:var(--bg2)}
+.mb .gt{color:var(--grn)}.mb .lt{color:var(--red)}.mb .gd{color:var(--gold)}
+.mb ul{padding-left:20px;margin:8px 0}
+.mb li{font-size:14px;line-height:1.8;color:var(--txt2);margin-bottom:4px}
+.mb .tip{background:var(--blubg);border:1px solid rgba(59,130,246,.2);border-radius:6px;padding:14px 16px;margin:14px 0}
+.mb .tipt{font-size:11px;font-weight:600;color:var(--blu);margin-bottom:5px;font-family:var(--mono)}
+.mb .warn{background:var(--redbg);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:14px 16px;margin:14px 0}
+.mb .wt{font-size:11px;font-weight:600;color:var(--red);margin-bottom:5px;font-family:var(--mono)}
+.trade{display:none}.trade.on{display:block}
+.learn{display:none}.learn.on{display:block}
+</style>
+</head>
+<body>
+<div class="ticker-wrap"><div class="ticker" id="ticker">
+<div class="ti"><span class="tn">50ETF</span><span class="tp">2.856</span><span class="tu">+1.2%</span></div>
+<div class="ti"><span class="tn">300ETF</span><span class="tp">4.123</span><span class="tu">+0.8%</span></div>
+<div class="ti"><span class="tn">沪300ETF</span><span class="tp">4.089</span><span class="td">-0.3%</span></div>
+<div class="ti"><span class="tn">IO购-2850</span><span class="tp">0.0892</span><span class="tu">+5.2%</span></div>
+<div class="ti"><span class="tn">IO沽-2850</span><span class="tp">0.0456</span><span class="td">-2.1%</span></div>
+<div class="ti"><span class="tn">VIX</span><span class="tp">18.5</span><span class="tu">+3.4%</span></div>
+<div class="ti"><span class="tn">上证指数</span><span class="tp">3284.5</span><span class="tu">+0.6%</span></div>
+<div class="ti"><span class="tn">沪深300</span><span class="tp">3892.7</span><span class="tu">+0.9%</span></div>
+<div class="ti"><span class="tn">50ETF</span><span class="tp">2.856</span><span class="tu">+1.2%</span></div>
+<div class="ti"><span class="tn">300ETF</span><span class="tp">4.123</span><span class="tu">+0.8%</span></div>
+<div class="ti"><span class="tn">沪300ETF</span><span class="tp">4.089</span><span class="td">-0.3%</span></div>
+<div class="ti"><span class="tn">IO购-2850</span><span class="tp">0.0892</span><span class="tu">+5.2%</span></div>
+<div class="ti"><span class="tn">IO沽-2850</span><span class="tp">0.0456</span><span class="td">-2.1%</span></div>
+<div class="ti"><span class="tn">VIX</span><span class="tp">18.5</span><span class="tu">+3.4%</span></div>
+<div class="ti"><span class="tn">上证指数</span><span class="tp">3284.5</span><span class="tu">+0.6%</span></div>
+<div class="ti"><span class="tn">沪深300</span><span class="tp">3892.7</span><span class="tu">+0.9%</span></div>
+</div></div>
+<div class="header">
+<div class="hl">期权学苑 <span>OPTIONS ACADEMY</span></div>
+<div class="hn"><button class="nt on" data-tab="learn">📖 学习中心</button><button class="nt" data-tab="trade">📊 模拟交易</button></div>
+<div class="hb">模拟交易 · 不构成投资建议</div>
+</div>
+<div class="container">
+<div class="learn on" id="learnSec">
+<div class="st">期权基础教程</div>
+<div class="ss">从概念到策略，系统掌握期权交易的核心知识</div>
+<div class="lg" id="lessonGrid"></div>
+</div>
+<div class="trade" id="tradeSec">
+<div class="st">期权模拟交易</div>
+<div class="ss">构建组合 &middot; 实时盈亏分析 &middot; 希腊字母追踪</div>
+<div class="panel">
+<div class="ph"><span class="pt">标的价格</span><span style="font-size:11px;color:var(--txtm);font-family:var(--mono)">← 拖动滑块模拟价格变动</span></div>
+<div class="pb">
+<div class="mpd">
+<div><div class="mpl">标的价格（模拟）</div><div class="mpv" id="upVal">100.00</div><div class="mpuc">50ETF · 模拟环境</div></div>
+<div style="text-align:right"><div class="mpl">隐含波动率 IV</div><div class="mpv" style="color:var(--pur);font-size:20px">22.5%</div></div>
+</div>
+<div class="slwrap"><input type="range" id="priceSlider" min="70" max="130" value="100" step="0.5"><div class="cls"><span>70</span><span>ATM · 100</span><span>130</span></div></div>
+</div>
+</div>
+<div class="tg">
+<div>
+<div class="panel"><div class="ph"><span class="pt">开仓下单</span></div><div class="pb">
+<div class="pr"><div><div class="fl">期权类型</div><select id="optType"><option value="call">认购 Call</option><option value="put">认沽 Put</option></select></div><div><div class="fl">交易方向</div><select id="optDir"><option value="buy">买入 Buy</option><option value="sell">卖出 Short</option></select></div></div>
+<div class="pr"><div><div class="fl">行权价 K</div><input type="number" id="strikeInput" value="100" min="50" max="150" step="1"></div><div><div class="fl">权利金（单价）</div><input type="number" id="premInput" value="3.00" min="0.01" step="0.01"></div></div>
+<div><div class="fl">数量（张）</div><input type="number" id="qtyInput" value="1" min="1" max="100"></div>
+<div class="br"><button class="b bc" id="btnCall">+ 认购</button><button class="b bp" id="btnPut">+ 认沽</button><button class="b bcl" id="btnClear">清仓</button></div>
+</div></div>
+<div class="panel"><div class="ph"><span class="pt">当前持仓</span><span id="posCount" style="font-size:11px;color:var(--txtm);font-family:var(--mono)">0 张</span></div><div class="pb"><div class="plist" id="posList"><div style="text-align:center;padding:20px;color:var(--txtm);font-size:12px">暂无持仓<br><span style="font-size:11px">点击上方按钮开仓</span></div></div></div></div>
+<div class="panel"><div class="ph"><span class="pt">快捷策略</span></div><div class="pb">
+<div class="sp"><button class="sb" onclick="applyStrat('bullSpread')"><div class="sbn">牛市价差</div><div class="sbd">Bull Call Spread</div></button><button class="sb" onclick="applyStrat('bearSpread')"><div class="sbn">熊市价差</div><div class="sbd">Bear Put Spread</div></button><button class="sb" onclick="applyStrat('straddle')"><div class="sbn">跨式组合</div><div class="sbd">Straddle</div></button><button class="sb" onclick="applyStrat('strangle')"><div class="sbn">宽跨式</div><div class="sbd">Strangle</div></button><button class="sb" onclick="applyStrat('coveredCall')"><div class="sbn">备兑开仓</div><div class="sbd">Covered Call</div></button><button class="sb" onclick="applyStrat('protPut')"><div class="sbn">保护性认沽</div><div class="sbd">Protective Put</div></button></div>
+</div></div>
+</div>
+<div>
+<div class="panel"><div class="ph"><span class="pt">盈亏结构图</span><span id="beLabel" style="font-size:11px;color:var(--txtm);font-family:var(--mono)"></span></div><div class="pb"><div id="pcWrap"><canvas id="pc"></canvas></div><div class="cls"><span>70</span><span>85</span><span>100</span><span>115</span><span>130</span></div></div></div>
+<div class="panel"><div class="ph"><span class="pt">希腊字母组合</span></div><div class="pb"><div class="gg"><div class="gi"><div class="gn">Delta Δ</div><div class="gv" id="dVal">0.00</div><div class="gd">价格敏感度</div></div><div class="gi"><div class="gn">Gamma Γ</div><div class="gv" id="gVal">0.00</div><div class="gd">Delta变化率</div></div><div class="gi"><div class="gn">Theta Θ</div><div class="gv" id="tVal">0.00</div><div class="gd">时间衰减/日</div></div><div class="gi"><div class="gn">Vega ν</div><div class="gv" id="vVal">0.00</div><div class="gd">波动率敏感</div></div></div><div class="ps2"><div class="pc2"><div class="pcl">最大盈利</div><div class="pcv n" id="maxProfit">—</div></div><div class="pc2"><div class="pcl">最大亏损</div><div class="pcv n" id="maxLoss">—</div></div></div></div></div>
+<div class="panel"><div class="ph"><span class="pt">期权链（模拟 50ETF 近月）</span></div><div class="pb"><table class="oct" id="optChain"><tr><th class="left">行权价</th><th>购IV</th><th>购价</th><th>沽价</th><th>沽IV</th></tr></table></div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mo" id="modal"><div class="m"><div class="mh"><h2 id="modalTitle">期权基础</h2><button class="mx" onclick="closeModal()">×</button></div><div class="mb" id="modalBody"></div><div class="mn"><button class="mnb" id="modalPrevBtn" onclick="modalNav(-1)">← 上一页</button><button class="mnb" id="modalPage" style="color:var(--txtm);font-family:var(--mono);font-size:11px;border:none;background:none;cursor:default"></button><button class="mnb p" id="modalNextBtn" onclick="modalNav(1)">下一页 →</button></div></div></div>
+<script>
+var LESSONS=[{"num":"01","title":"什么是期权？","desc":"理解认购与认沽的基本概念，四要素解析","tags":["基础"],"content":"<h3>期权的本质</h3><p>期权（Option）是一种<strong class='gd'>选择权</strong>，赋予持有者在特定日期（到期日）或之前，以固定价格（行权价）买入或卖出标的资产的权利，但并非义务。</p><p>与期货不同，期权的最大特点是——<strong>收益不对称，风险有限</strong>。买方最大损失=支付的权利金；卖方最大收益=收取的权利金。</p><h3>两种基本期权</h3><table><tr><th>类型</th><th>英文</th><th>买方权利</th><th>适用场景</th></tr><tr><td class='gt'>认购期权</td><td>Call</td><td>以K买入标的</td><td>看涨后市</td></tr><tr><td class='lt'>认沽期权</td><td>Put</td><td>以K卖出标的</td><td>看跌/对冲</td></tr></table><h3>四个核心要素</h3><div class='fm'>期权价值 = 内在价值 + 时间价值<br>内在价值(购) = max(S - K, 0)<br>内在价值(沽) = max(K - S, 0)</div><ul><li><strong>S（标的价格）</strong> — 期权对应的资产，如50ETF、沪深300指数</li><li><strong>K（行权价）</strong> — 约定的买卖价格</li><li><strong>T（到期日）</strong> — 期权失效的日期（国内ETF期权每月第四个周三）</li><li><strong>权利金</strong> — 买卖期权的价格，由内在价值+时间价值组成</li></ul><div class='tip'><div class='tipt'>💡 关键洞察</div><p>期权买方用有限的权利金换取潜在的无限收益空间，这就是期权'以小博大'的魅力所在。</p></div>"},{"num":"02","title":"看涨期权（Call）","desc":"买入看涨期权的收益结构与适用场景","tags":["基础","认购"],"content":"<h3>认购期权的定义</h3><p><strong>Call（认购期权）</strong>赋予持有者在到期日或之前<strong class='gt'>以行权价K买入</strong>标的资产的权利。</p><h3>收益结构</h3><div class='fm'>到期收益 = max(S_T - K, 0) - 权利金<br>盈亏平衡点 = K + 权利金</div><ul><li><strong>S_T &gt; K（实值）</strong>：买方行权，收益 = S_T - K - 权利金</li><li><strong>S_T = K（平值）</strong>：临界点，收益为零</li><li><strong>S_T &lt; K（虚值）</strong>：买方不行权，损失全部权利金</li></ul><h3>实例演算</h3><p>标的现价S=100，买入行权价K=100的认购期权，权利金3元/张</p><table><tr><th>到期价格</th><th>类型</th><th>行权收益</th><th>净收益</th></tr><tr><td>70</td><td class='lt'>虚值</td><td class='lt'>不行权</td><td class='lt'>-300元</td></tr><tr><td>100</td><td>平值</td><td>行权=0</td><td class='lt'>-300元</td></tr><tr><td>103</td><td>临界</td><td>+300元</td><td>0（盈亏平衡）</td></tr><tr><td>115</td><td class='gt'>实值</td><td class='gt'>+1500元</td><td class='gt'>+1200元</td></tr><tr><td>130</td><td class='gt'>深度实值</td><td class='gt'>+3000元</td><td class='gt'>+2700元</td></tr></table><div class='tip'><div class='tipt'>💡 杠杆效应</div><p>标的价格+15%，收益+500%——这就是期权独特的杠杆特性。</p></div><div class='warn'><div class='wt'>⚠️ 风险提示</div><p>当标的价格横盘或下跌时，时间价值持续衰减（Theta为负），买入期权的时间成本不可忽视。</p></div>"},{"num":"03","title":"看跌期权（Put）","desc":"认沽期权的价值与保险功能","tags":["基础","认沽"],"content":"<h3>认沽期权的定义</h3><p><strong>Put（认沽期权）</strong>赋予持有者在到期日或之前<strong class='lt'>以行权价K卖出</strong>标的资产的权利。拥有'下有保底'的收益特征。</p><h3>收益结构</h3><div class='fm'>到期收益 = max(K - S_T, 0) - 权利金<br>盈亏平衡点 = K - 权利金</div><ul><li><strong>S_T &lt; K（实值）</strong>：标的价格跌破行权价，买方可行权卖出</li><li><strong>S_T = K（平值）</strong>：临界，收益为零</li><li><strong>S_T &gt; K（虚值）</strong>：标的价格在行权价之上，买方放弃行权，损失权利金</li></ul><h3>保护性认沽（Protective Put）</h3><p>持有标的的同时买入认沽期权，是最经典的期权保险策略：持股成本 = 买入成本 - max(K-S_T,0) + 权利金，相当于为持仓购买了一个'下跌保险'。</p><div class='tip'><div class='tipt'>💡 核心逻辑</div><p>买Put的人不是在'看跌'，而是在'不想承担下跌风险'——这是机构最常用的对冲工具。</p></div>"},{"num":"04","title":"行权价与实虚值","desc":"深度解析实值、平值、虚值期权的区别","tags":["基础"],"content":"<h3>三种价值状态</h3><p>期权根据标的价格与行权价的关系，分为三种状态：</p><table><tr><th>状态</th><th>条件</th><th>内在价值</th><th>特征</th></tr><tr><td class='gt'>实值 ITM</td><td>购: S&gt;K / 沽: S&lt;K</td><td>&gt;0</td><td>内在价值大，权利金高</td></tr><tr><td>平值 ATM</td><td>S≈K</td><td>=0</td><td>时间价值最大，Gamma最高</td></tr><tr><td class='lt'>虚值 OTM</td><td>购: S&lt;K / 沽: S&gt;K</td><td>=0</td><td>仅时间价值，胜率低但杠杆高</td></tr></table><h3>实值 vs 虚值的选择</h3><div class='fm'>实值期权：内在价值大，权利金高，胜率高但杠杆低<br>虚值期权：内在价值为0，权利金低，胜率低但杠杆高<br>平值期权：Delta≈0.5，Theta衰减最快</div><div class='tip'><div class='tipt'>💡 交易员的选择</div><p>做方向性交易——虚值期权杠杆更高；做短线交易——平值期权gamma最大；做价值投资——实值期权时间成本低。</p></div>"},{"num":"05","title":"希腊字母：Delta","desc":"Delta是期权最重要的Greeks，理解它你就理解了期权定价的一半","tags":["Greeks"],"content":"<h3>Delta的定义</h3><p><strong>Delta（Δ）</strong>衡量标的价格变化1元时期权价格的变动幅度。</p><div class='fm'>Delta = Δ期权价格 / Δ标的价格</div><h3>Delta的取值范围</h3><table><tr><th>期权类型</th><th>Delta范围</th><th>物理含义</th></tr><tr><td class='gt'>深度实值认购</td><td>+0.8 ~ +1.0</td><td>接近标的涨跌</td></tr><tr><td>平值认购</td><td>≈ +0.5</td><td>标的价格涨1元，期权涨0.5元</td></tr><tr><td class='lt'>深度虚值认购</td><td>+0.0 ~ +0.2</td><td>几乎不跟随标的</td></tr><tr><td class='lt'>平值认沽</td><td>≈ -0.5</td><td>标的价格涨1元，认沽跌0.5元</td></tr><tr><td class='gt'>深度实值认沽</td><td>-0.8 ~ -1.0</td><td>完全对冲标的</td></tr></table><h3>Delta的对冲意义</h3><p>如果你持有1张Delta=0.5的Call，当标的上涨1元时，期权头寸价值增加0.5元。要完全对冲这个头寸，需要卖出0.5份标的，这就是'Delta对冲'。</p><div class='tip'><div class='tipt'>💡 Delta与概率</div><p>Delta≈0.5的平值期权，意味着市场认为它有约50%的概率变成实值。这可能是期权最直觉的应用！</p></div>"},{"num":"06","title":"希腊字母：Gamma","desc":"Gamma衡量Delta变化的加速度","tags":["Greeks"],"content":"<h3>Gamma的定义</h3><p><strong>Gamma（Γ）</strong>衡量Delta对标的价格变化的敏感度，即标的价格变动1元时Delta的变化量。</p><div class='fm'>Gamma = ΔDelta / Δ标的价格</div><h3>Gamma的特征</h3><ul><li><strong>平值期权Gamma最大</strong>——越接近行权价，Delta对价格越敏感</li><li><strong>到期日临近，Gamma急剧增大</strong>——'Gamma绞肉机'</li><li><strong>虚值和实值期权的Gamma较小</strong></li></ul><h3>实例理解</h3><p>某期权Delta=0.5，Gamma=0.05。当标的价格上涨1元：Delta从0.5变为0.55，期权额外获得0.05的收益！</p><div class='fm'>标的价格上涨1元 → Delta从0.5变为0.55 → 期权额外收益 +0.05</div><div class='warn'><div class='wt'>⚠️ Gamma双刃剑</div><p>Gamma既能放大盈利，也能放大亏损。短线交易者要特别警惕'Gamma绞肉机'——到期日临近时，平值期权的Gamma可能让你一夜之间从盈利变亏损。</p></div>"},{"num":"07","title":"希腊字母：Theta","desc":"时间价值衰减，期权买方的敌人","tags":["Greeks"],"content":"<h3>Theta的定义</h3><p><strong>Theta（Θ）</strong>衡量期权时间价值的衰减速度，即每经过一天，期权价格下降多少。</p><div class='fm'>Theta = 期权价格变化 / 时间流逝（通常为负值）</div><h3>Theta的特征</h3><ul><li><strong>期权买方的Theta为负</strong>——时间是你的敌人，每天都在损失价值</li><li><strong>期权卖方的Theta为正</strong>——时间是你的朋友，每天都在'赚时间'</li><li><strong>平值期权Theta最大</strong>——时间衰减最快</li><li><strong>到期日临近，Theta加速增大</strong>——最后30天衰减最快</li></ul><h3>实例理解</h3><p>某期权Theta=-0.05，意味着每过一天（其他条件不变），期权价值减少0.05元/张。一周后，即使标的价格不变，你的期权已经'蒸发'了0.35元！</p><div class='tip'><div class='tipt'>💡 卖方的优势</div><p>统计数据显示，超过70%的期权到期时价值归零。这意味着期权卖方在概率上天然占优——但要注意，卖方的最大亏损理论上是无限的。</p></div>"},{"num":"08","title":"希腊字母：Vega","desc":"波动率是期权定价的灵魂","tags":["Greeks"],"content":"<h3>Vega的定义</h3><p><strong>Vega（ν）</strong>衡量隐含波动率（IV）变化1%时期权价格的变动幅度。</p><div class='fm'>Vega = Δ期权价格 / Δ隐含波动率（1%）</div><h3>Vega的特征</h3><ul><li><strong>长期期权的Vega更大</strong>——距离到期越远，波动率对期权价值影响越大</li><li><strong>平值期权的Vega最大</strong></li><li><strong>波动率上升，买方受益；波动率下降，卖方受益</strong></li></ul><h3>波动率微笑（Volatility Smile）</h3><p>同一标的、行权价不同、到期日相同的期权，隐含波动率呈'微笑'形状：虚值购和虚值沽的IV高于平值期权。这反映了市场对'尾部风险'的定价溢价。</p><div class='tip'><div class='tipt'>💡 VIX与期权交易</div><p>VIX（恐慌指数）反映市场波动率预期。当VIX处于高位时，期权权利金昂贵（适合卖方）；当VIX处于低位时，期权便宜（适合买方）。</p></div>"},{"num":"09","title":"牛市价差（Bull Spread）","desc":"用价差策略降低做多的成本","tags":["策略"],"content":"<h3>策略构建</h3><p><strong>牛市认购价差（Bull Call Spread）</strong>：买入低行权价Call + 卖出高行权价Call（同月份）</p><div class='fm'>最大盈利 = (高行权价 - 低行权价) - 净权利金支出<br>最大亏损 = 净权利金支出<br>盈亏平衡点 = 低行权价 + 净权利金支出</div><h3>为什么卖出高行权价Call？</h3><p>卖出高行权价的Call可以获得权利金，<strong>降低买入低行权价Call的成本</strong>。代价是上涨空间被'封顶'——这正是价差策略的核心：<span class='gt'>用空间换成本</span>。</p><h3>适用场景</h3><ul><li>温和看涨后市，不确定能涨多少</li><li>希望降低单纯买Call的成本</li><li>预计标的会在某个价格区间内上涨</li></ul><table><tr><th>条件</th><th>效果</th></tr><tr><td>标的价格 &gt; 高行权价</td><td class='gt'>最大盈利（价差全额实现）</td></tr><tr><td>低行权价 &lt; 标的价格 &lt; 高行权价</td><td>部分盈利（线性递减）</td></tr><tr><td>标的价格 &lt; 低行权价</td><td class='lt'>最大亏损（全部权利金）</td></tr></table><div class='tip'><div class='tipt'>💡 另一种牛市价差</div><p>卖出高行权价Put + 买入更低行权价Put（Bull Put Spread），收到的权利金大于支出，建仓时有净流入（Credit Spread）。</p></div>"},{"num":"10","title":"跨式组合（Straddle）","desc":"同时押注方向与波动率的利器","tags":["策略"],"content":"<h3>策略构建</h3><p><strong>买入跨式（Long Straddle）</strong>：同时买入相同行权价、相同到期日的Call和Put</p><div class='fm'>最大盈利（理论）= 无限（标的方向有利时）<br>最大亏损 = 权利金支出（Call权利金 + Put权利金）<br>盈亏平衡点 = 行权价 ± 权利金总和</div><h3>适用场景</h3><ul><li>预期重大事件即将发生（财报、联储决议），但方向不明</li><li>认为当前IV过低，波动率将急剧上升</li><li>'买彩票'心态——赌大幅波动</li></ul><h3>买入跨式 vs 卖出跨式</h3><table><tr><th>策略</th><th>预期</th><th>最大盈利</th><th>最大亏损</th></tr><tr><td>Long Straddle</td><td>大幅波动</td><td class='gt'>无限</td><td class='lt'>权利金</td></tr><tr><td>Short Straddle</td><td>横盘震荡</td><td class='gt'>权利金</td><td class='lt'>无限</td></tr></table><div class='warn'><div class='wt'>⚠️ Short Straddle的风险</div><p>卖出跨式看起来'胜率高'（大多数期权到期归零），但一旦黑天鹅事件发生，亏损是灾难性的。机构用Short Straddle必须有严格的风控和止损规则。</p></div>"}];
+
+var currentLesson = 0;
+
+function renderLessons() {
+  var grid = document.getElementById('lessonGrid');
+  var html = '';
+  for (var i = 0; i < LESSONS.length; i++) {
+    var l = LESSONS[i];
+    var tags = '';
+    for (var j = 0; j < l.tags.length; j++) {
+      var t = l.tags[j];
+      var cls = t === '策略' ? 'str' : t === 'Greeks' ? 'grk' : t === '基础' ? 'adv' : '';
+      tags += '<span class="tag ' + cls + '">' + t + '</span>';
+    }
+    html += '<div class="lc" onclick="openLesson(' + i + ')" style="animation-delay:' + (i * 0.05) + 's"><div class="ln">LESSON ' + l.num + '</div><div class="lt">' + l.title + '</div><div class="ld">' + l.desc + '</div>' + tags + '</div>';
+  }
+  grid.innerHTML = html;
+}
+
+function openLesson(idx) {
+  currentLesson = idx;
+  var l = LESSONS[idx];
+  document.getElementById('modalTitle').textContent = l.title;
+  document.getElementById('modalBody').innerHTML = l.content;
+  document.getElementById('modalPage').textContent = (idx + 1) + ' / ' + LESSONS.length;
+  document.getElementById('modalPrevBtn').style.visibility = idx > 0 ? 'visible' : 'hidden';
+  document.getElementById('modalNextBtn').style.visibility = idx < LESSONS.length - 1 ? 'visible' : 'hidden';
+  document.getElementById('modal').classList.add('on');
+  document.getElementById('modalBody').scrollTop = 0;
+}
+
+function modalNav(dir) {
+  var next = currentLesson + dir;
+  if (next >= 0 && next < LESSONS.length) openLesson(next);
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+document.querySelectorAll('.nt').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.nt').forEach(function(b) { b.classList.remove('on'); });
+    btn.classList.add('on');
+    var tab = btn.dataset.tab;
+    document.getElementById('learnSec').classList.toggle('on', tab === 'learn');
+    document.getElementById('tradeSec').classList.toggle('on', tab === 'trade');
+  });
+});
+
+var S = { positions: [], currentPrice: 100, IV: 0.225, T: 30/365 };
+
+function normCDF(x) {
+  var a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  var sign=x<0?-1:1;x=Math.abs(x)/Math.sqrt(2);
+  var t=1/(1+p*x);
+  var y=1-Math.exp(-x*x)*(a1*t+a2*t*t+a3*Math.pow(t,3)+a4*Math.pow(t,4)+a5*Math.pow(t,5));
+  return 0.5*(1+sign*y);
+}
+
+function bsPrice(type, spot, K, T, r, sigma) {
+  if (T <= 0) return type === 'call' ? Math.max(spot - K, 0) : Math.max(K - spot, 0);
+  var d1 = (Math.log(spot/K) + (r+0.5*sigma*sigma)*T) / (sigma*Math.sqrt(T));
+  var d2 = d1 - sigma*Math.sqrt(T);
+  if (type === 'call') return spot*normCDF(d1) - K*Math.exp(-r*T)*normCDF(d2);
+  return K*Math.exp(-r*T)*normCDF(-d2) - spot*normCDF(-d1);
+}
+
+function calcGreeks(type, spot, K, T, r, sigma) {
+  if (T <= 0.001) {
+    var delta = type === 'call' ? (spot>K?1:0) : (spot<K?-1:0);
+    return { delta: delta, gamma: 0, theta: 0, vega: 0 };
+  }
+  var d1 = (Math.log(spot/K)+(r+0.5*sigma*sigma)*T)/(sigma*Math.sqrt(T));
+  var d2 = d1-sigma*Math.sqrt(T);
+  var phi = Math.exp(-d1*d1/2)/Math.sqrt(2*Math.PI);
+  var delta = type==='call' ? normCDF(d1) : normCDF(d1)-1;
+  var gamma = phi/(spot*sigma*Math.sqrt(T));
+  var theta = type==='call' ? (-spot*phi*sigma/(2*Math.sqrt(T))-r*K*Math.exp(-r*T)*normCDF(d2))/365 : (-spot*phi*sigma/(2*Math.sqrt(T))+r*K*Math.exp(-r*T)*normCDF(-d2))/365;
+  var vega = spot*phi*Math.sqrt(T)/100;
+  return { delta: delta, gamma: gamma, theta: theta, vega: vega };
+}
+
+function calcPnL(type, dir, K, premium, qty, spot) {
+  var mult = 1;
+  var pnl;
+  if (type === 'call') {
+    pnl = dir === 'buy' ? (Math.max(spot-K,0) - premium)*qty*mult : (premium - Math.max(spot-K,0))*qty*mult;
+  } else {
+    pnl = dir === 'buy' ? (Math.max(K-spot,0) - premium)*qty*mult : (premium - Math.max(K-spot,0))*qty*mult;
+  }
+  return { pnl: pnl, pnlStr: (pnl>=0?'+':'')+pnl.toFixed(0), color: pnl>=0?'g':'l' };
+}
+
+function updateSim() {
+  var spot = parseFloat(document.getElementById('upVal').textContent);
+  S.currentPrice = spot;
+  var posList = document.getElementById('posList');
+  document.getElementById('posCount').textContent = S.positions.length + ' 张';
+  if (S.positions.length === 0) {
+    posList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txtm);font-size:12px">暂无持仓<br><span style="font-size:11px">点击上方按钮开仓</span></div>';
+  } else {
+    var html = '';
+    for (var i = 0; i < S.positions.length; i++) {
+      var p = S.positions[i];
+      var res = calcPnL(p.type, p.dir, p.K, p.prem, p.qty, spot);
+      var cls = p.type+p.dir==='callbuy'?'cb':p.type+p.dir==='callsell'?'cs':p.type+p.dir==='putbuy'?'pb':'ps';
+      html += '<div class="pi '+cls+'"><div class="pin"><div class="ptp">'+(p.type==='call'?'认购':'认沽')+' · '+(p.dir==='buy'?'买入':'卖出')+'</div><div class="pde">K='+p.K+' · '+p.prem+'元 · x'+p.qty+'张</div></div><div class="ppn '+res.color+'">'+res.pnlStr+'</div><button class="pdel" onclick="removePos('+i+')">x</button></div>';
+    }
+    posList.innerHTML = html;
+  }
+
+  var totalDelta=0,totalGamma=0,totalTheta=0,totalVega=0;
+  for (var i = 0; i < S.positions.length; i++) {
+    var p = S.positions[i];
+    var greeks = calcGreeks(p.type==='call'?'call':'put', spot, p.K, S.T, 0.03, S.IV);
+    var sign = p.dir==='buy'?1:-1;
+    var mult = p.qty;
+    totalDelta += greeks.delta * sign * mult;
+    totalGamma += greeks.gamma * sign * mult;
+    totalTheta += greeks.theta * sign * mult;
+    totalVega += greeks.vega * sign * mult;
+  }
+  document.getElementById('dVal').textContent = totalDelta.toFixed(3);
+  document.getElementById('gVal').textContent = totalGamma.toFixed(4);
+  document.getElementById('tVal').textContent = totalTheta.toFixed(2);
+  document.getElementById('vVal').textContent = totalVega.toFixed(3);
+
+  if (S.positions.length > 0) {
+    var maxP=0,maxL=0;
+    for (var price=70; price<=130; price+=0.5) {
+      var total=0;
+      for (var j = 0; j < S.positions.length; j++) {
+        var p = S.positions[j];
+        total += calcPnL(p.type, p.dir, p.K, p.prem, p.qty, price).pnl;
+      }
+      if (total>maxP) maxP=total;
+      if (total<maxL) maxL=total;
+    }
+    document.getElementById('maxProfit').textContent = (maxP>=0?'+':'')+maxP.toFixed(0);
+    document.getElementById('maxProfit').className = 'pcv '+(maxP>=0?'g':'l');
+    document.getElementById('maxLoss').textContent = (maxL>=0?'+':'')+maxL.toFixed(0);
+    document.getElementById('maxLoss').className = 'pcv '+(maxL>=0?'g':'l');
+  } else {
+    document.getElementById('maxProfit').textContent = '—';
+    document.getElementById('maxProfit').className = 'pcv n';
+    document.getElementById('maxLoss').textContent = '—';
+    document.getElementById('maxLoss').className = 'pcv n';
+  }
+  drawPayoffChart();
+}
+
+function drawPayoffChart() {
+  var canvas = document.getElementById('pc');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  var w = rect.width, h = rect.height;
+  ctx.clearRect(0,0,w,h);
+  if (S.positions.length === 0) {
+    ctx.fillStyle = 'rgba(136,153,170,0.3)';
+    ctx.font = '13px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('添加持仓后查看盈亏结构图', w/2, h/2);
+    return;
+  }
+  var prices = [];
+  for (var i = 0; i <= 120; i++) prices.push(70+i*0.5);
+  var payoffs = prices.map(function(price) {
+    var total=0;
+    for (var j = 0; j < S.positions.length; j++) {
+      var p = S.positions[j];
+      total += calcPnL(p.type,p.dir,p.K,p.prem,p.qty,price).pnl;
+    }
+    return total;
+  });
+  var maxP = Math.max.apply(null, payoffs.concat([1]));
+  var minP = Math.min.apply(null, payoffs.concat([-1]));
+  var range = Math.max(maxP-Math.min(0,minP), 100);
+  function toX(p) { return (p-70)/60*w; }
+  function toY(v) { return h/2 - (v/(range*1.2))*(h/2); }
+  ctx.strokeStyle = 'rgba(42,53,69,0.5)';
+  ctx.lineWidth = 1;
+  for (var i=0; i<=4; i++) { var y=h/4*i; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  for (var i=0; i<=6; i++) { var x=w/6*i; ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+  ctx.strokeStyle = '#3d4f66';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+  var cpX = toX(S.currentPrice);
+  ctx.strokeStyle = '#e8a020';
+  ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(cpX,0); ctx.lineTo(cpX,h); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (var i = 0; i < prices.length; i++) {
+    var x=toX(prices[i]), y=toY(payoffs[i]);
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.lineTo(toX(prices[prices.length-1]), h/2);
+  ctx.lineTo(toX(prices[0]), h/2);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(34,197,94,0.04)';
+  ctx.fill();
+}
+
+function addPosition(type) {
+  var dir = document.getElementById('optDir').value;
+  var K = parseFloat(document.getElementById('strikeInput').value);
+  var prem = parseFloat(document.getElementById('premInput').value);
+  var qty = parseInt(document.getElementById('qtyInput').value) || 1;
+  if (!K || !prem) return;
+  S.positions.push({ type: type, dir: dir, K: K, prem: prem, qty: qty });
+  updateSim();
+}
+
+function removePos(idx) { S.positions.splice(idx,1); updateSim(); }
+
+document.getElementById('btnCall').addEventListener('click', function() { addPosition('call'); });
+document.getElementById('btnPut').addEventListener('click', function() { addPosition('put'); });
+document.getElementById('btnClear').addEventListener('click', function() { S.positions=[]; updateSim(); });
+
+document.getElementById('priceSlider').addEventListener('input', function() {
+  var v = parseFloat(this.value);
+  document.getElementById('upVal').textContent = v.toFixed(2);
+  S.currentPrice = v;
+  updateSim();
+});
+
+function applyStrat(name) {
+  S.positions = [];
+  if (name === 'bullSpread') {
+    S.positions.push({type:'call',dir:'buy',K:95,prem:6.5,qty:1});
+    S.positions.push({type:'call',dir:'sell',K:110,prem:2.0,qty:1});
+  } else if (name === 'bearSpread') {
+    S.positions.push({type:'put',dir:'buy',K:105,prem:6.5,qty:1});
+    S.positions.push({type:'put',dir:'sell',K:90,prem:2.0,qty:1});
+  } else if (name === 'straddle') {
+    S.positions.push({type:'call',dir:'buy',K:100,prem:3.5,qty:1});
+    S.positions.push({type:'put',dir:'buy',K:100,prem:3.5,qty:1});
+  } else if (name === 'strangle') {
+    S.positions.push({type:'call',dir:'buy',K:108,prem:1.8,qty:1});
+    S.positions.push({type:'put',dir:'buy',K:92,prem:1.8,qty:1});
+  } else if (name === 'coveredCall') {
+    S.positions.push({type:'call',dir:'sell',K:108,prem:2.5,qty:1});
+  } else if (name === 'protPut') {
+    S.positions.push({type:'put',dir:'buy',K:92,prem:1.5,qty:1});
+  }
+  updateSim();
+}
+
+function buildOptChain() {
+  var strikes = [80,85,90,95,100,105,110,115,120,125];
+  var ivs = [0.28,0.26,0.24,0.225,0.22,0.22,0.225,0.24,0.26,0.28];
+  var midPrice = parseFloat(document.getElementById('upVal').textContent);
+  var table = document.getElementById('optChain');
+  var html = '<tr><th class="left">行权价</th><th>购IV</th><th>购价</th><th>沽价</th><th>沽IV</th></tr>';
+  for (var i = 0; i < strikes.length; i++) {
+    var K = strikes[i];
+    var isATM = Math.abs(K - midPrice) <= 5;
+    var cPrice = bsPrice('call', midPrice, K, S.T, 0.03, ivs[i]);
+    var pPrice = bsPrice('put', midPrice, K, S.T, 0.03, ivs[i]);
+    html += '<tr'+(isATM?' class="atmr"':'')+'><td class="left">'+K+'</td><td>'+(ivs[i]*100).toFixed(0)+'%</td><td class="cop" onclick="selectCall('+K+')">'+cPrice.toFixed(2)+'</td><td class="pup" onclick="selectPut('+K+')">'+pPrice.toFixed(2)+'</td><td>'+(ivs[i]*100).toFixed(0)+'%</td></tr>';
+  }
+  table.innerHTML = html;
+}
+
+function selectCall(K) {
+  document.getElementById('optType').value = 'call';
+  document.getElementById('strikeInput').value = K;
+  document.getElementById('optDir').value = 'buy';
+  var price = bsPrice('call', S.currentPrice, K, S.T, 0.03, S.IV);
+  document.getElementById('premInput').value = price.toFixed(2);
+}
+
+function selectPut(K) {
+  document.getElementById('optType').value = 'put';
+  document.getElementById('strikeInput').value = K;
+  document.getElementById('optDir').value = 'buy';
+  var price = bsPrice('put', S.currentPrice, K, S.T, 0.03, S.IV);
+  document.getElementById('premInput').value = price.toFixed(2);
+}
+
+renderLessons();
+buildOptChain();
+updateSim();
+
+window.addEventListener('resize', function() { buildOptChain(); updateSim(); });
+</script>
+</body>
+</html>
