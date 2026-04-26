@@ -121,8 +121,8 @@ app.use((req, res, next) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', (req, res, next) => {
-  // 排除登录本身
-  if (req.path === '/auth/login' || req.path === '/auth/logout' || req.path === '/auth/status') {
+  // 排除登录本身和 ljg-chat 接口
+  if (req.path === '/auth/login' || req.path === '/auth/logout' || req.path === '/auth/status' || req.path === '/ljg/chat') {
     return next();
   }
   const cookies = parseCookies(req.headers.cookie);
@@ -794,6 +794,56 @@ app.get('/api/hooks/:id/runs', (req, res) => {
   const { id } = req.params;
   const runs = getHookRuns(id);
   res.json({ ok: true, runs });
+});
+
+// ============================================================
+// LJ-G Chat API
+// ============================================================
+
+app.post('/api/ljg/chat', async (req, res) => {
+  const { message, skill, conversation } = req.body;
+  if (!message) return res.status(400).json({ ok: false, error: 'message is required' });
+
+  // 构建 prompt，注入 skill 上下文
+  const skillName = skill === 'auto' ? '' : skill;
+  let systemPrompt = `你是 LJ-G 工作台的 AI 助手。`;
+  if (skillName) {
+    systemPrompt += ` 当前激活的技能是 ${skillName}，请按照该技能的 SKILL.md 规范执行。`;
+  } else {
+    systemPrompt += ` 请根据用户输入内容自动判断最适合的技能并执行。可用技能：ljg-writes, ljg-word, ljg-word-flow, ljg-plain, ljg-invest, ljg-rank, ljg-paper, ljg-paper-flow, ljg-card, ljg-skill-map, ljg-roundtable, ljg-learn, ljg-x-download。`;
+  }
+
+  // 构建消息历史
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...(conversation || []).slice(-10).map(m => ({ role: m.role, content: m.content })),
+    { role: 'user', content: message }
+  ];
+
+  try {
+    // 调用 fusecode.cc (Claude Code 后端)
+    const axios = require('axios');
+    const response = await axios.post('https://www.fusecode.cc/v1/messages', {
+      model: 'claude-opus-4-6',
+      messages: messages.filter(m => m.role !== 'system'),
+      system: messages.find(m => m.role === 'system')?.content,
+      max_tokens: 4096
+    }, {
+      timeout: 60000,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'sk-f7cc027928ef0a2bd0b8d24bf882d138390f55220a1cd5a43e8d9d7d862a1eb7',
+        'anthropic-version': '2023-06-01'
+      }
+    });
+
+    const reply = response.data?.content?.[0]?.text || '处理完成。';
+    res.json({ ok: true, reply });
+  } catch (e) {
+    console.error('LJ-G chat error:', e.message);
+    // fallback: 返回友好错误
+    res.json({ ok: false, reply: '⚠️ 服务暂时不可用，请稍后再试。' });
+  }
 });
 
 // ============================================================
