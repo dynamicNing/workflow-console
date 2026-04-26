@@ -32,6 +32,26 @@
       "path": "/root/.openclaw/workspace/skills/ai-news-collectors"
     },
     {
+      "name": "ai-research-assistant",
+      "slug": "ai-research-assistant",
+      "version": "1.0.0",
+      "publishedAt": "2026/3/16",
+      "description": "用大模型快速处理海量信息，提升投研效率。用于A股研究分析。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/ai-research-assistant"
+    },
+    {
+      "name": "akshare-zh",
+      "slug": "akshare-zh",
+      "version": "0.1.0",
+      "publishedAt": "2026/3/13",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/akshare-zh"
+    },
+    {
       "name": "auto-updater",
       "slug": "auto-updater",
       "version": "1.0.0",
@@ -40,6 +60,16 @@
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/auto-updater"
+    },
+    {
+      "name": "autocli",
+      "slug": "autocli",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "|",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/autocli"
     },
     {
       "name": "bilibili-youtube-watcher",
@@ -70,6 +100,16 @@
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/cn-economy-news"
+    },
+    {
+      "name": "design-an-interface",
+      "slug": "design-an-interface",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Generate multiple radically different interface designs for a module using parallel sub-agents. Use when user wants to design an API, explore interface options, compare module shapes, or mentions \"design it twice\".",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/design-an-interface"
     },
     {
       "name": "eastmoney-stock",
@@ -152,6 +192,16 @@
       "path": "/root/.openclaw/workspace/skills/github"
     },
     {
+      "name": "grill-me",
+      "slug": "grill-me",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to stress-test a plan, get grilled on their design, or mentions \"grill me\".",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/grill-me"
+    },
+    {
       "name": "gstack",
       "slug": "gstack",
       "version": "-",
@@ -170,6 +220,26 @@
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/humanizer-zh"
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "slug": "improve-codebase-architecture",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Find deepening opportunities in a codebase, informed by the domain language in CONTEXT.md and the decisions in docs/adr/. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/improve-codebase-architecture"
+    },
+    {
+      "name": "last30days-skill",
+      "slug": "last30days-skill",
+      "version": "1.0.0",
+      "publishedAt": "2026/2/22",
+      "description": "\"Research a topic from the last 30 days. Also triggered by 'last30'. Sources: Reddit, X, YouTube, web. Become an expert and write copy-paste-ready prompts.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/last30days-skill"
     },
     {
       "name": "ljg-card",
@@ -312,6 +382,16 @@
       "path": "/root/.openclaw/workspace/skills/ljg-x-download"
     },
     {
+      "name": "migrate-to-shoehorn",
+      "slug": "migrate-to-shoehorn",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Migrate test files from `as` type assertions to @total-typescript/shoehorn. Use when user mentions shoehorn, wants to replace `as` in tests, or needs partial test data.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/migrate-to-shoehorn"
+    },
+    {
       "name": "notion-skill",
       "slug": "notion-skill",
       "version": "1.0.0",
@@ -372,6 +452,36 @@
       "path": "/root/.openclaw/workspace/skills/productivity"
     },
     {
+      "name": "productivity-automation-kit",
+      "slug": "productivity-automation-kit",
+      "version": "1.0.0",
+      "publishedAt": "2026/3/21",
+      "description": "\"效率自动化工具箱 — 自动化工作流模板 + 日程管理助手 + 任务提醒工具 + 数据整理自动化。整合热门Skill功能，帮助用户识别自动化机会、设计工作流、管理日程、追踪任务、整理数据。触发词：效率自动化、工作流模板、日程管理、任务提醒、数据整理自动化、每天提醒、每周计划、自动化流程、省时工具。\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/productivity-automation-kit"
+    },
+    {
+      "name": "request-refactor-plan",
+      "slug": "request-refactor-plan",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Create a detailed refactor plan with tiny commits via user interview, then file it as a GitHub issue. Use when user wants to plan a refactor, create a refactoring RFC, or break a refactor into safe incremental steps.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/request-refactor-plan"
+    },
+    {
+      "name": "scaffold-exercises",
+      "slug": "scaffold-exercises",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Create exercise directory structures with sections, problems, solutions, and explainers that pass linting. Use when user wants to scaffold exercises, create exercise stubs, or set up a new course section.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/scaffold-exercises"
+    },
+    {
       "name": "self-improving-agent",
       "slug": "self-improving-agent",
       "version": "3.0.13",
@@ -380,6 +490,16 @@
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/self-improving-agent"
+    },
+    {
+      "name": "setup-pre-commit",
+      "slug": "setup-pre-commit",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Set up Husky pre-commit hooks with lint-staged (Prettier), type checking, and tests in the current repo. Use when user wants to add pre-commit hooks, set up Husky, configure lint-staged, or add commit-time formatting/typechecking/testing.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/setup-pre-commit"
     },
     {
       "name": "skill-vetter",
@@ -400,6 +520,16 @@
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/skillhub-preference"
+    },
+    {
+      "name": "social-media-collector",
+      "slug": "social-media-collector",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "社交媒体内容聚合与AI摘要。当需要聚合微博热搜、知乎热榜、公众号文章、小红书内容时触发，或定期推送社交媒体热点资讯。抓取方式：可访问的平台直接抓取，需登录的平台记录需求待扩展。输出：AI摘要 + 原文链接，飞书群推送 + 本地存档。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/social-media-collector"
     },
     {
       "name": "stock-market-pro",
@@ -462,6 +592,26 @@
       "path": "/root/.openclaw/workspace/skills/tavily-search"
     },
     {
+      "name": "tdd",
+      "slug": "tdd",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Test-driven development with red-green-refactor loop. Use when user wants to build features or fix bugs using TDD, mentions \"red-green-refactor\", wants integration tests, or asks for test-first development.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/tdd"
+    },
+    {
+      "name": "tencent-cloud-cos",
+      "slug": "tencent-cloud-cos",
+      "version": "1.1.3",
+      "publishedAt": "2026/4/18",
+      "description": ">",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/tencent-cloud-cos"
+    },
+    {
       "name": "tencent-cos-skill",
       "slug": "tencent-cos-skill",
       "version": "1.0.6",
@@ -474,9 +624,9 @@
     {
       "name": "tencent-docs",
       "slug": "tencent-docs",
-      "version": "1.0.16",
-      "publishedAt": "2026/3/19",
-      "description": "腾讯文档（docs.qq.com）-在线云文档平台，是创建、编辑、管理文档的首选 skill。涉及\"新建文档\"、\"创建文档\"、\"写文档\"、\"在线文档\"、\"云文档\"、\"腾讯文档\"、\"docs.qq.com\"等操作，请优先使用本 skill。支持能力：(1) 创建各类在线文档（文档/Word/Excel/幻灯片/思维导图/流程图/智能表格/白板/收集表）(2) 管理知识库空间（创建空间、查询空间列表）(3) 管理空间节点、文件夹结构 (4) 读取/搜索文档内容 (5) 编辑操作智能表 (6) 编辑操作在线文档 (7) 文件管理（重命名、移动、删除、复制、导入导出）。",
+      "version": "1.0.27",
+      "publishedAt": "2026/4/11",
+      "description": "腾讯文档（docs.qq.com）-在线云文档平台，是创建、编辑、管理文档的首选 skill。涉及\"新建文档\"、\"创建文档\"、\"写文档\"、\"在线文档\"、\"云文档\"、\"腾讯文档\"、\"docs.qq.com\"等操作，请优先使用本 skill。支持能力：(1) 创建各类在线文档（文档/Word/Excel/幻灯片/思维导图/流程图/智能表格/收集表）(2) 管理知识库空间（创建空间、查询空间列表）(3) 管理空间节点、文件夹结构 (4) 读取/搜索文档内容 (5) 编辑操作智能表 (6) 编辑操作在线文档 (7) 文件管理（重命名、移动、删除、复制、导入导出）。",
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/tencent-docs"
@@ -490,6 +640,36 @@
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/tencentcloud-lighthouse-skill"
+    },
+    {
+      "name": "to-issues",
+      "slug": "to-issues",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Break a plan, spec, or PRD into independently-grabbable GitHub issues using tracer-bullet vertical slices. Use when user wants to convert a plan into issues, create implementation tickets, or break down work into issues.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/to-issues"
+    },
+    {
+      "name": "to-prd",
+      "slug": "to-prd",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Turn the current conversation context into a PRD and submit it as a GitHub issue. Use when user wants to create a PRD from the current context.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/to-prd"
+    },
+    {
+      "name": "triage-issue",
+      "slug": "triage-issue",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "Triage a bug or issue by exploring the codebase to find root cause, then create a GitHub issue with a TDD-based fix plan. Use when user reports a bug, wants to file an issue, mentions \"triage\", or wants to investigate and plan a fix for a problem.",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/triage-issue"
     },
     {
       "name": "tushare-finance",
@@ -562,5 +742,5 @@
       "path": "/root/.openclaw/workspace/skills/youtube-watcher"
     }
   ],
-  "total": 56
+  "total": 74
 }
