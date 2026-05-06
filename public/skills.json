@@ -252,6 +252,16 @@
       "path": "/root/.openclaw/workspace/skills/improve-codebase-architecture"
     },
     {
+      "name": "industry-park-reits",
+      "slug": "industry-park-reits",
+      "version": "-",
+      "publishedAt": "-",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/industry-park-reits"
+    },
+    {
       "name": "last30days-skill",
       "slug": "last30days-skill",
       "version": "1.0.0",
@@ -762,5 +772,5 @@
       "path": "/root/.openclaw/workspace/skills/youtube-watcher"
     }
   ],
-  "total": 76
+  "total": 77
 }
