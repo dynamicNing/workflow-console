@@ -72,6 +72,36 @@
       "path": "/root/.openclaw/workspace/skills/autocli"
     },
     {
+      "name": "bilibili-all-in-one",
+      "slug": "bilibili-all-in-one",
+      "version": "1.0.24",
+      "publishedAt": "2026/5/2",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/bilibili-all-in-one"
+    },
+    {
+      "name": "bilibili-hot-monitor",
+      "slug": "bilibili-hot-monitor",
+      "version": "1.0.21",
+      "publishedAt": "2026/2/8",
+      "description": "生成B站热门视频日报并发送邮件。触发词：B站热门、bilibili日报、视频日报、热门视频",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/bilibili-hot-monitor"
+    },
+    {
+      "name": "bilibili-subtitle-download-skill",
+      "slug": "bilibili-subtitle-download-skill",
+      "version": "1.0.0",
+      "publishedAt": "2026/2/21",
+      "description": "下载 Bilibili 视频字幕，将其进行分块以供 LLM（大语言模型）处理，并生成高质量的总结。当用户提供 Bilibili BV 号或 URL，并希望获取视频内容的总结、核心要点或详细的分解时使用。",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/bilibili-subtitle-download-skill"
+    },
+    {
       "name": "bilibili-youtube-watcher",
       "slug": "bilibili-youtube-watcher",
       "version": "1.0.0",
@@ -130,6 +160,16 @@
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/elite-longterm-memory"
+    },
+    {
+      "name": "feishu",
+      "slug": "feishu",
+      "version": "1.0.5",
+      "publishedAt": "2026/3/11",
+      "description": "",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/feishu"
     },
     {
       "name": "finance-news-pro",
@@ -514,8 +554,8 @@
     {
       "name": "self-improving-agent",
       "slug": "self-improving-agent",
-      "version": "3.0.13",
-      "publishedAt": "2026/4/4",
+      "version": "3.0.21",
+      "publishedAt": "2026/5/1",
       "description": "\"Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude ('No, that's wrong...', 'Actually...'), (3) User requests a capability that doesn't exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.\"",
       "emoji": "",
       "category": "workspace",
@@ -644,8 +684,8 @@
     {
       "name": "tencent-cos-skill",
       "slug": "tencent-cos-skill",
-      "version": "1.0.6",
-      "publishedAt": "2026/3/6",
+      "version": "1.1.7",
+      "publishedAt": "2026/4/18",
       "description": ">",
       "emoji": "",
       "category": "workspace",
@@ -654,9 +694,9 @@
     {
       "name": "tencent-docs",
       "slug": "tencent-docs",
-      "version": "1.0.27",
-      "publishedAt": "2026/4/11",
-      "description": "腾讯文档（docs.qq.com）-在线云文档平台，是创建、编辑、管理文档的首选 skill。涉及\"新建文档\"、\"创建文档\"、\"写文档\"、\"在线文档\"、\"云文档\"、\"腾讯文档\"、\"docs.qq.com\"等操作，请优先使用本 skill。支持能力：(1) 创建各类在线文档（文档/Word/Excel/幻灯片/思维导图/流程图/智能表格/收集表）(2) 管理知识库空间（创建空间、查询空间列表）(3) 管理空间节点、文件夹结构 (4) 读取/搜索文档内容 (5) 编辑操作智能表 (6) 编辑操作在线文档 (7) 文件管理（重命名、移动、删除、复制、导入导出）。",
+      "version": "1.0.31",
+      "publishedAt": "2026/4/25",
+      "description": "腾讯文档（docs.qq.com）-在线云文档平台，是创建、编辑、管理文档的首选 skill。涉及\"新建/创建/编辑/读取/查看/搜索文档\"、\"保存文件\"、\"云文档\"、\"腾讯文档\"、\"docs.qq.com\"等操作，请优先使用本 skill。支持能力：(1) 创建各类在线文档（文档/Word/Excel/幻灯片/思维导图/流程图/智能表格/收集表）(2) 管理知识库空间（创建空间、查询空间列表）(3) 管理空间节点、文件夹结构 (4) 读取/搜索文档内容 (5) 编辑操作智能表 (6) 编辑操作在线文档 (7) 文件管理（重命名、移动、删除、复制、导入导出）(8) 网页剪藏、本地文件/文档上云。",
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/tencent-docs"
@@ -664,9 +704,9 @@
     {
       "name": "tencentcloud-lighthouse-skill",
       "slug": "tencentcloud-lighthouse-skill",
-      "version": "1.0.0",
-      "publishedAt": "2026/2/11",
-      "description": "Manage Tencent Cloud Lighthouse (轻量应用服务器) — auto-setup mcporter + MCP, query instances, monitoring & alerting, self-diagnostics, firewall, snapshots, remote command execution (TAT). Use when user asks about Lighthouse or 轻量应用服务器. NOT for CVM or other cloud server types.",
+      "version": "1.0.2",
+      "publishedAt": "2026/5/8",
+      "description": "'Load when: user mentions Lighthouse, 轻量应用服务器, 轻量服务器, or asks to check/create/manage/deploy Lighthouse instances, deploy applications to Lighthouse, manage Lighthouse firewall rules, reset Lighthouse password, view Lighthouse snapshots/images/traffic, monitor Lighthouse metrics, run commands on Lighthouse via TAT, or asks to get/identify the current instance ID. Trigger phrases: \"查看轻量服务器\", \"Lighthouse实例\", \"轻量应用服务器\", \"部署应用\", \"部署程序\", \"部署到Lighthouse\", \"管理防火墙规则\", \"重置密码\", \"查看快照\", \"查看流量包\", \"获取实例ID\", \"查看实例ID\", \"当前实例\", \"实例IP\", \"check Lighthouse\", \"create Lighthouse\", \"deploy app\", \"deploy application\", \"Lighthouse firewall\", \"Lighthouse snapshot\", \"instance ID\", \"whoami\". NOT for CVM, CBS, VPC, or other non-Lighthouse products.'",
       "emoji": "",
       "category": "workspace",
       "path": "/root/.openclaw/workspace/skills/tencentcloud-lighthouse-skill"
@@ -732,6 +772,16 @@
       "path": "/root/.openclaw/workspace/skills/web-access"
     },
     {
+      "name": "web-tools-guide",
+      "slug": "web-tools-guide",
+      "version": "1.0.2",
+      "publishedAt": "2026/4/14",
+      "description": "\"MANDATORY before calling web_search, web_fetch, browser, or opencli. Contains required error-handling procedures (web_search failure → must guide user to configure API), fallback chain (opencli CLI covers 70+ sites as structured fallback before browser), and site-specific login URLs. Without reading this skill, you WILL handle failures incorrectly and miss available tools. Trigger on: 搜索/上网/查资料/打开网站/抓取网页/新闻/热点/web search/fetch/browser/opencli.\"",
+      "emoji": "",
+      "category": "workspace",
+      "path": "/root/.openclaw/workspace/skills/web-tools-guide"
+    },
+    {
       "name": "weixin-mcp-server",
       "slug": "weixin-mcp-server",
       "version": "-",
@@ -772,5 +822,5 @@
       "path": "/root/.openclaw/workspace/skills/youtube-watcher"
     }
   ],
-  "total": 77
+  "total": 82
 }
